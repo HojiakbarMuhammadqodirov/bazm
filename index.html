@@ -379,6 +379,24 @@ footer .fd{font-family:var(--f-sans);letter-spacing:.42em;font-size:11px;color:v
 .lb .cap .del{margin-top:0;border-color:rgba(255,200,205,.5);color:#ffd5da}
 body.locked .music{opacity:0;pointer-events:none}
 
+/* thank-you modal */
+.thanks{position:fixed;inset:0;z-index:66;display:flex;align-items:center;justify-content:center;
+  padding-block:max(20px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-bottom,0px));padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));
+  background:rgba(74,34,52,.38);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);animation:fade .35s ease}
+.thanks.out{opacity:0;transition:opacity .3s ease}
+.t-card{position:relative;width:100%;max-width:380px;padding:46px 28px 30px;text-align:center;background:var(--paper);box-shadow:0 30px 70px -20px rgba(74,34,52,.55);animation:tpop .6s cubic-bezier(.2,1.3,.4,1) both}
+.t-card::before{content:"";position:absolute;inset:8px;border:1px solid var(--line);pointer-events:none}
+@keyframes tpop{from{opacity:0;transform:translateY(24px) scale(.94)}}
+.t-mark{width:78px;height:78px;margin:0 auto 18px;display:block}
+.t-mark circle{fill:none;stroke:var(--rose);stroke-width:1.2;stroke-dasharray:240;stroke-dashoffset:240;animation:draw 1s cubic-bezier(.6,0,.2,1) .15s forwards}
+.t-mark path{fill:none;stroke:var(--mauve);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:draw .55s ease .9s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.t-eyebrow{font-family:var(--f-sans);font-size:10px;letter-spacing:.38em;text-transform:uppercase;color:var(--mauve);padding-left:.38em}
+.t-title{font-family:var(--f-script);font-size:clamp(40px,11vw,52px);line-height:1.1;color:var(--mauve);margin:10px 0 6px}
+.t-text{font-size:21px;line-height:1.5;color:var(--ink);max-width:26ch;margin:0 auto;text-wrap:balance}
+.t-sub{font-style:italic;font-size:17px;color:var(--muted);margin-top:12px}
+.t-card .btn{margin-top:26px}
+
 /* reveal */
 .js .rv{transition:opacity 1.4s ease,transform 1.4s cubic-bezier(.2,.7,.2,1)}
 .js .rv:not(.in){opacity:0;transform:translateY(26px)}
@@ -1018,13 +1036,29 @@ $("#upForm").addEventListener("submit", async e => {
   try { await Store.commitUploads(items, { name, note }); } catch (err) { lastErr = err; ok = 0; up.files.forEach(f => f.state = ""); renderThumbs(); }
   setTimeout(() => { bar.hidden = true; bar.firstElementChild.style.width = 0; }, 900);
   if (ok === todo.length) {
-    msg.className = "msg ok"; msg.textContent = `Rahmat, ${name}! ${ok} ta lahza to'y egalariga yetib bordi.`;
-    dust.burst(90); $("#upNote").value = ""; $("#upBtn").disabled = true;
+    msg.className = "msg"; msg.textContent = "";
+    thanks({ eyebrow: "Lahzalar yuborildi", title: `Rahmat, ${name}!`, text: `${ok} ta surat to'y egalariga yetib bordi.`, sub: "Bu lahzalar bir umr esdalik bo'lib qoladi" });
+    $("#upNote").value = ""; up.files.forEach(f => URL.revokeObjectURL(f.url)); up.files = []; renderThumbs();
   } else {
     msg.className = "msg err"; msg.textContent = (ok ? `${ok} tasi yuborildi. ` : "") + errText(lastErr);
     $("#upBtn").disabled = false;
   }
 });
+
+/* ===== Rahmat oynasi ===== */
+function thanks({ eyebrow, title, text, sub }) {
+  const t = document.createElement("div"); t.className = "thanks"; t.setAttribute("role", "dialog"); t.setAttribute("aria-modal", "true");
+  t.innerHTML = `<div class="t-card"><svg class="t-mark" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="37"/><path d="M25 41.5l10 10 20-22"/></svg>
+    <div class="t-eyebrow">${esc(eyebrow)}</div><div class="t-title">${esc(title)}</div><p class="t-text">${esc(text)}</p>${sub ? `<p class="t-sub">${esc(sub)}</p>` : ""}
+    <button class="btn" type="button">Yopish</button></div>`;
+  const close = () => { t.classList.add("out"); setTimeout(() => t.remove(), 300); removeEventListener("keydown", key); };
+  const key = e => { if (e.key === "Escape") close(); };
+  t.querySelector(".btn").onclick = close;
+  t.addEventListener("click", e => { if (e.target === t) close(); });
+  addEventListener("keydown", key);
+  document.body.appendChild(t); t.querySelector(".btn").focus({ preventScroll: true });
+  const r = t.querySelector(".t-mark").getBoundingClientRect(); dust.burst(70, r.left + r.width / 2, r.top + r.height / 2);
+}
 
 /* ===== Javob (RSVP) ===== */
 $("#rsForm").addEventListener("submit", async e => {
@@ -1037,8 +1071,11 @@ $("#rsForm").addEventListener("submit", async e => {
   const btn = $("#rsBtn"); btn.disabled = true; msg.className = "msg"; msg.textContent = "Yuborilmoqda…";
   try {
     await Store.sendRsvp({ name, going: go.value === "yes", guests: Math.max(1, Math.min(20, +$("#rsCount").value || 1)), wish: $("#rsWish").value.trim() });
-    msg.className = "msg ok"; msg.textContent = go.value === "yes" ? `Rahmat, ${name}! Sizni intizorlik bilan kutamiz.` : `Rahmat, ${name}! Tilaklaringiz uchun minnatdormiz.`;
-    if (go.value === "yes") dust.burst(80);
+    msg.className = "msg"; msg.textContent = "";
+    thanks(go.value === "yes"
+      ? { eyebrow: "Javobingiz qabul qilindi", title: `Rahmat, ${name}!`, text: "Sizni intizorlik bilan kutamiz.", sub: `25-oktabr, ${hhmm} · «Asr» to'yxonasi` }
+      : { eyebrow: "Javobingiz qabul qilindi", title: `Rahmat, ${name}!`, text: "Tilaklaringiz uchun chin qalbimizdan minnatdormiz.", sub: "Sizni duolaringizda eslab qolamiz" });
+    $("#rsWish").value = ""; go.checked = false;
   } catch (err) { msg.className = "msg err"; msg.textContent = errText(err); }
   btn.disabled = false;
 });
