@@ -71,9 +71,9 @@ button,input,textarea{font:inherit;color:inherit}
 .leafg.l{left:25%;transform-origin:0 50%}
 .leafg.r{left:50%;transform-origin:100% 50%}
 .g-ui{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;
-  padding:110px max(16px,env(safe-area-inset-right,0px)) calc(34px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
-  background:linear-gradient(180deg,rgba(74,34,52,0),rgba(74,34,52,.42) 45%,rgba(60,24,40,.66));color:#fff;transition:opacity .35s ease,transform .5s ease}
-.g-top{position:absolute;top:0;left:0;right:0;z-index:3;padding-top:calc(26px + env(safe-area-inset-top,0px));text-align:center;transition:opacity .35s ease}
+  padding:70px max(16px,env(safe-area-inset-right,0px)) calc(26px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  background:linear-gradient(180deg,rgba(60,24,40,0),rgba(60,24,40,.42));color:#fff;transition:opacity .35s ease,transform .5s ease}
+.g-top{position:absolute;top:0;left:0;right:0;z-index:3;display:flex;flex-direction:column;align-items:center;gap:10px;color:#fff;padding:calc(26px + env(safe-area-inset-top,0px)) 16px 90px;background:linear-gradient(180deg,rgba(60,24,40,.62),rgba(74,34,52,.3) 60%,rgba(74,34,52,0));text-align:center;transition:opacity .35s ease}
 .g-top .caps{color:#fff;text-shadow:0 1px 8px rgba(74,34,52,.45)}
 .g-names{font-family:var(--f-script);font-size:clamp(40px,11vw,62px);line-height:1.05;text-shadow:0 2px 18px rgba(40,10,25,.45)}
 .g-names em{font-style:normal;font-size:.6em;margin:0 .15em;color:#f6d3db}
@@ -361,10 +361,10 @@ body.locked .music{opacity:0;pointer-events:none}
 
 /* couple in the intro */
 .couplewrap{pointer-events:none}
-.couple{position:absolute;left:32.5%;width:35%;top:67.2%;aspect-ratio:140/222;transform-origin:50% 100%;opacity:0;will-change:transform}
+.couple{position:absolute;left:32.5%;width:35%;top:67.2%;height:25.81%;transform-origin:50% 100%;transform:translateY(-24%) scale(.78);will-change:transform;filter:drop-shadow(0 6px 10px rgba(60,24,40,.28))}
 .couple svg{width:100%;height:100%;display:block;overflow:visible}
-#gate.s-open .couple{animation:walkin 2.3s cubic-bezier(.3,.1,.35,1) .12s forwards}
-@keyframes walkin{0%{opacity:0;transform:translateY(8%) scale(1.06)}10%{opacity:1}100%{opacity:1;transform:translateY(-84%) scale(.3)}}
+#gate.s-open .couple{animation:walkin 2.4s cubic-bezier(.35,.05,.35,1) .3s forwards}
+@keyframes walkin{from{transform:translateY(-24%) scale(.78)}to{transform:translateY(-86%) scale(.28)}}
 #gate.s-open .cp-bride,#gate.s-open .cp-groom{animation:step .42s ease-in-out infinite alternate}
 #gate.s-open .cp-groom{animation-delay:-.21s}
 @keyframes step{from{transform:translateY(0)}to{transform:translateY(-2px)}}
@@ -425,10 +425,10 @@ body.locked .music{opacity:0;pointer-events:none}
 <!-- ================= GATE ================= -->
 <div id="gate" role="dialog" aria-label="Taklifnoma">
   <div class="scene" id="scene"></div>
-  <div class="g-top"><div class="caps">Qiz bazmi</div></div>
-  <div class="g-ui">
+  <div class="g-top"><div class="caps">Qiz bazmi</div>
     <div class="g-names">Rustamjon <em>&amp;</em> Madinabonu</div>
-    <div class="g-date">25 · 10 · 2026</div>
+    <div class="g-date">25 · 10 · 2026</div></div>
+  <div class="g-ui">
     <button class="btn-open" id="openBtn" type="button">Taklifnomani ochish <svg viewBox="0 0 16 10" fill="none" stroke="currentColor" aria-hidden="true"><path d="M0 5h15M11 1l4 4-4 4"/></svg></button>
   </div>
 </div>
@@ -1028,15 +1028,15 @@ function openGate() {
   const r = $(".gatewrap .glow").getBoundingClientRect();
   music.start();
   gate.classList.add("s-open");
-  at(700, () => dust.stream(r.left + r.width / 2, r.top + r.height * .55, 900));
-  at(1700, () => gate.classList.add("s-fly"));
-  at(2350, () => $("#flash").classList.add("go"));
-  at(2500, () => {
+  at(900, () => dust.stream(r.left + r.width / 2, r.top + r.height * .55, 900));
+  at(2050, () => gate.classList.add("s-fly"));
+  at(2650, () => $("#flash").classList.add("go"));
+  at(2800, () => {
     gate.classList.add("gone"); document.body.classList.remove("locked");
     document.body.classList.add("entered"); document.body.classList.remove("pre");
     document.querySelectorAll(".hero .sprig").forEach(s => s.classList.add("in"));
   });
-  at(3200, () => gate.remove());
+  at(3500, () => gate.remove());
 }
 $("#scene").addEventListener("click", openGate);
 $("#openBtn").addEventListener("click", openGate);
