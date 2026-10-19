@@ -342,6 +342,13 @@ h2{margin:20px 0 0;font-size:clamp(34px,9.4vw,42px)}
 img{image-rendering:auto}
 .nframe.in .nf{filter:none}
 @keyframes blurin{from{opacity:0;filter:blur(5px);transform:translateY(8px)}to{opacity:1;filter:none;transform:none}}
+/* karusel: markaziy surat tekis (aylantirish suratni xiralashtiradi), yon kartalar ham to'liq tiniq */
+.pc{opacity:1}
+.pc.on{transform:translateY(0) scale(1)}
+/* kelin-kuyov rasmi: chetlari ingichka yumshoq, kontrast biroz yuqori */
+.ill{-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent),linear-gradient(180deg,transparent,#000 5%,#000 95%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent),linear-gradient(180deg,transparent,#000 5%,#000 95%,transparent)}
+.ill img{filter:contrast(1.08)}
 /* =====================================================================
    SECONDARY UI (appended after the main CSS)
    Upload-card internals, messages/banners, footer host link,

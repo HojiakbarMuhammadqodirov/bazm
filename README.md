@@ -34,7 +34,7 @@ Tayyor bo'lgach, mehmonlarga `https://<loyiha>.vercel.app` havolasini yuborasiz.
 
 **Rasmlar (`img/`)**
 - `gate-closed.webp`, `gate-open.webp`: kirish darvozasi va bog' manzarasi (videodagi yangi darvoza/saroy rasmlari kelganda shu nomlar bilan almashtiriladi)
-- `gate-arch.webp`, `gate-leaf-l.webp`, `gate-leaf-r.webp`: ochiladigan darvoza animatsiyasi uchun `gate-closed.webp` dan qirqilgan qatlamlar (darvoza rasmi almashsa, bular ham qaytadan tayyorlanadi)
+- `gate-arch-hd.webp`, `gate-leaf-l-hd.webp`, `gate-leaf-r-hd.webp`, `gate-open-hd.webp`: ochiladigan darvoza va bog' manzarasi uchun `gate-closed.webp` / `gate-open.webp` dan tayyorlangan 2x o'tkir qatlamlar (darvoza rasmi almashsa, bular ham qaytadan tayyorlanadi)
 - `frame-v.webp`: ismlar turadigan tik gulli ramka
 - `divider.webp`: bo'limlar orasidagi gul chiziq
 - `couple.webp`: ramkadan keyingi kelin-kuyov rasmi
