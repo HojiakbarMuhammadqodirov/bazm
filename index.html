@@ -756,47 +756,26 @@ const dust = (() => {
   $("#mapSvg").innerHTML = h;
 })();
 
-/* ===== Musiqa (yumshoq fortepiano) ===== */
+/* ===== Musiqa (music.m4a) ===== */
 const music = (() => {
-  let ctx, master, on = false, timer, step = 0, nextT = 0;
   const btn = $("#music");
-  const mel = [64, 0, 67, 71, 69, 0, 67, 64, 62, 0, 64, 67, 66, 0, 0, 0, 64, 0, 67, 71, 74, 0, 72, 71, 69, 0, 67, 66, 67, 0, 0, 0];
-  const chords = [[52, 59, 64], [48, 55, 64], [50, 57, 62], [47, 54, 62]];
-  const f = n => 440 * Math.pow(2, (n - 69) / 12);
-  const note = (freq, t, vol, dur) => {
-    const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter();
-    o.type = "triangle"; o2.type = "sine"; o.frequency.value = freq; o2.frequency.value = freq * 1.003; lp.type = "lowpass"; lp.frequency.value = 1800;
-    o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(master);
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0006, t + dur);
-    o.start(t); o2.start(t); o.stop(t + dur + .05); o2.stop(t + dur + .05);
-  };
-  const init = () => {
-    ctx = new (window.AudioContext || window.webkitAudioContext)();
-    master = ctx.createGain(); master.gain.value = 0;
-    const d = ctx.createDelay(); d.delayTime.value = .42; const fb = ctx.createGain(); fb.gain.value = .32; const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1500;
-    master.connect(ctx.destination); master.connect(d); d.connect(lp).connect(fb).connect(d); lp.connect(ctx.destination);
-  };
-  const sched = () => {
-    const spb = 60 / 66 / 2;
-    while (nextT < ctx.currentTime + .3) {
-      const n = mel[step % mel.length]; if (n) note(f(n), nextT, .11, 2.8);
-      if (step % 8 === 0) chords[(step / 8) % chords.length].forEach((c, i) => note(f(c), nextT + i * .03, .05, 4.5));
-      nextT += spb; step++;
-    }
+  const a = new Audio("music.m4a");
+  a.loop = true; a.preload = "auto"; a.setAttribute("playsinline", "");
+  let on = false, fade;
+  const ramp = (to, ms, done) => {
+    clearInterval(fade); const from = a.volume, t0 = performance.now();
+    fade = setInterval(() => { const k = Math.min(1, (performance.now() - t0) / ms); try { a.volume = from + (to - from) * k; } catch (e) { } if (k >= 1) { clearInterval(fade); done && done(); } }, 50);
   };
   const start = () => {
-    try {
-      if (!ctx) init();
-      ctx.resume(); nextT = ctx.currentTime + .1;
-      master.gain.cancelScheduledValues(ctx.currentTime); master.gain.linearRampToValueAtTime(.6, ctx.currentTime + 3);
-      clearInterval(timer); timer = setInterval(sched, 90); on = true; btn.classList.add("on");
-    } catch (e) { on = false; }
+    // play() bosish ichida chaqiriladi, aks holda telefonlar ovozni bloklaydi
+    try { a.volume = 0; } catch (e) { }
+    const p = a.play();
+    on = true; btn.classList.add("on"); ramp(.85, 2500);
+    if (p && p.catch) p.catch(() => { on = false; btn.classList.remove("on"); });
   };
-  const stop = () => {
-    if (!ctx) return; master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setValueAtTime(master.gain.value, ctx.currentTime); master.gain.linearRampToValueAtTime(0, ctx.currentTime + .8);
-    setTimeout(() => clearInterval(timer), 850); on = false; btn.classList.remove("on");
-  };
+  const stop = () => { on = false; btn.classList.remove("on"); ramp(0, 600, () => a.pause()); };
   btn.addEventListener("click", () => on ? stop() : start());
+  document.addEventListener("visibilitychange", () => { if (document.hidden && on) a.pause(); else if (!document.hidden && on) a.play().catch(() => { }); });
   return { start };
 })();
 

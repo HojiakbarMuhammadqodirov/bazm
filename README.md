@@ -26,5 +26,6 @@ Tayyor bo'lgach, mehmonlarga `https://<loyiha>.vercel.app` havolasini yuborasiz.
 - `api/rsvp.js`: "Kelasizmi?" javobini saqlaydi
 - `api/host.js`: PIN'ni tekshiradi va suratlar bilan javoblarni qaytaradi
 - `api/ping.js`: sahifa xotira ulanganini tekshirishi uchun
+- `music.m4a`: fon musiqasi (darvoza ochilganda chalinadi)
 
 Sana va vaqt `index.html` ichidagi `CONFIG` blokida.
