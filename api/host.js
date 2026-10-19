@@ -36,16 +36,21 @@ export default async function handler(req, res) {
   }
   try {
     // O'chirish: { pin, del: { kind: "photo" | "rsvp", id } }
+    // O'chirish: { pin, del: { kind: "photo" | "rsvp", ids: [...] } }  (eski { id } ham ishlaydi)
     if (b.del) {
-      const { kind, id } = b.del;
-      if (!ID.test(String(id))) return res.status(400).json({ error: "invalid_request" });
+      const { kind } = b.del;
+      const ids = [].concat(b.del.ids || b.del.id || []).map(String);
+      if (!ids.length || ids.length > 300 || !ids.every(i => ID.test(i))) return res.status(400).json({ error: "invalid_request" });
+      let paths;
       if (kind === "photo") {
-        const f = await load(`meta/${id}.json`);
-        const photo = f ? JSON.parse(f.body.toString("utf8")).photo : null;
-        await remove([`meta/${id}.json`, ...(photo && photo.startsWith("moments/") ? [photo] : [])]);
-      } else if (kind === "rsvp") await remove([`rsvp/${id}.json`]);
+        const photos = await Promise.all(ids.map(async id => {
+          try { const f = await load(`meta/${id}.json`); return f ? JSON.parse(f.body.toString("utf8")).photo : null; } catch { return null; }
+        }));
+        paths = [...ids.map(id => `meta/${id}.json`), ...photos.filter(x => x && x.startsWith("moments/"))];
+      } else if (kind === "rsvp") paths = ids.map(id => `rsvp/${id}.json`);
       else return res.status(400).json({ error: "invalid_request" });
-      return res.status(200).json({ ok: true });
+      await remove(paths);
+      return res.status(200).json({ ok: true, deleted: ids.length });
     }
     const [metas, rsvps] = await Promise.all([listAll("meta/"), listAll("rsvp/")]);
     const [photos, answers] = await Promise.all([readAll(metas), readAll(rsvps)]);

@@ -313,7 +313,7 @@ footer .fd{font-family:var(--f-sans);letter-spacing:.42em;font-size:11px;color:v
 .host-link svg{width:13px;height:13px}
 
 /* overlays (host panel, PIN, lightbox) */
-.overlay{position:fixed;inset:0;z-index:60;background:rgba(251,247,242,.97);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);overflow-y:auto;
+.overlay{position:fixed;inset:0;z-index:60;background:var(--paper);overflow-y:auto;
   padding-block:max(18px,env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));animation:fade .4s ease}
 @keyframes fade{from{opacity:0}}
 .x{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#ffffff;color:var(--ink);cursor:pointer;display:grid;place-items:center;z-index:3}
@@ -337,7 +337,7 @@ footer .fd{font-family:var(--f-sans);letter-spacing:.42em;font-size:11px;color:v
 .tabs{display:flex;justify-content:center;gap:8px;margin:22px 0 28px;flex-wrap:wrap}
 .tabs button{padding:10px 18px;border:1px solid var(--line);background:none;cursor:pointer;font-family:var(--f-sans);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
 .tabs button[aria-selected="true"]{border-color:var(--mauve);color:#ffffff;background:var(--mauve)}
-.gal{columns:3 220px;column-gap:12px}
+.gal{columns:3 150px;column-gap:10px}
 .gal figure{break-inside:avoid;margin:0 0 12px;position:relative;cursor:zoom-in;background:#ffffff;box-shadow:0 10px 24px -14px rgba(80,40,48,.35);animation:pop .5s ease both}
 .gal img{width:100%;display:block;min-height:80px}
 .gal figcaption{padding:9px 11px;font-size:15px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
@@ -382,6 +382,32 @@ body.locked .music{opacity:0;pointer-events:none}
 .lb .cap .save{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;background:#fff;color:var(--mauve);border-color:#fff;font-weight:500}
 .lb .cap .save svg{width:16px;height:16px}
 .lb .cap .save[disabled]{opacity:.7}
+
+/* gallery selection */
+.gtools{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 auto 10px}
+.tbtn{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 18px;border:1px solid var(--line);background:#fff;color:var(--mauve);cursor:pointer;font-family:var(--f-sans);font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase}
+.tbtn.solid{background:var(--mauve);border-color:var(--mauve);color:#fff}
+.tbtn svg{width:16px;height:16px}
+.tbtn[disabled]{opacity:.6}
+.gnote{margin:0 0 20px}
+.gal.selecting figure{cursor:pointer}
+.gal .tick{display:none;position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:rgba(74,34,52,.25);box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.gal.selecting .tick{display:block}
+.gal figure.sel .tick{background:var(--mauve) url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4 8-9" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E') center/70% no-repeat;border-color:#fff}
+.gal figure.sel{outline:3px solid var(--mauve);outline-offset:-3px}
+.gal figure.sel img{opacity:.85}
+.gal.selecting{padding-bottom:150px}
+.selbar{position:fixed;left:0;right:0;bottom:0;z-index:4;display:flex;flex-direction:column;gap:10px;align-items:center;
+  padding:14px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  background:rgba(255,255,255,.97);border-top:1px solid var(--line);box-shadow:0 -12px 30px -14px rgba(74,34,52,.35);animation:fade .25s ease}
+.sb-count{font-size:17px;color:var(--ink)}
+.sb-count b{color:var(--mauve);font-weight:600}
+.sb-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:520px}
+.sb-acts .btn{padding:15px 10px}
+.btn.danger{background:#fff;color:var(--err);border:1px solid rgba(169,71,76,.45)}
+.btn.danger.sure{background:var(--err);color:#fff;border-color:var(--err)}
+.btn.danger:hover{background:#fff5f6}
+.btn.danger.sure:hover{background:#963d42}
 
 /* thank-you modal */
 .thanks{position:fixed;inset:0;z-index:66;display:flex;align-items:center;justify-content:center;
@@ -980,7 +1006,8 @@ const Store = {
   },
   canDelete() { return this.mode === "vercel" && !!this._pin; },
   async del(kind, id) {
-    return this._api("/api/host", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ pin: this._pin, del: { kind, id } }) });
+    const ids = [].concat(id);
+    return this._api("/api/host", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ pin: this._pin, del: { kind, ids } }) });
   },
   async save(p, filename) {
     if (this.mode === "claude" && this.downloads) {
@@ -1159,34 +1186,71 @@ async function openHost(pin) {
   const counts = () => { body.querySelector("#cP").textContent = photos.length; body.querySelector("#cR").textContent = answers.length; };
   const tb = body.querySelector("#tabBody");
   const fmt = ts => ts ? new Date(ts).toLocaleString("en-GB", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "";
+  let selecting = false; const sel = new Set();
+  // Saqlash 2 bosqichda: avval suratlar yuklanadi, keyin bosilganda darhol saqlanadi (iPhone ulashish oynasi shuni talab qiladi)
+  const saveFlow = (btn, pick, label) => {
+    let files = null, key = "";
+    const lab = btn.querySelector("span");
+    btn.onclick = async () => {
+      const list = pick(), k = list.map(p => p.id || p.url).join(",");
+      if (!list.length) return;
+      if (list.every(p => fileReady.has(p.url))) { files = list.map(p => fileReady.get(p.url)); key = k; }   // oldindan tayyor: bir bosishda saqlanadi
+      if (files && k === key) {
+        btn.disabled = true;
+        try { const r = await saveFiles(files); lab.textContent = r === "cancel" ? label(files.length) : "Saqlandi ✓"; }
+        catch (e) { lab.textContent = "Saqlanmadi, qayta bosing"; }
+        btn.disabled = false; return;
+      }
+      btn.disabled = true; const out = []; let n = 0;
+      for (const p of list) { lab.textContent = `Tayyorlanmoqda… ${++n} / ${list.length}`; try { out.push(await fileFor(p, photos.indexOf(p) + 1)); } catch (e) { } }
+      btn.disabled = false;
+      if (!out.length) { lab.textContent = "Suratlar ochilmadi"; files = null; return; }
+      files = out; key = k; lab.textContent = `${label(out.length)} · bosing`;
+    };
+  };
   const showP = () => {
-    if (!photos.length) { tb.innerHTML = '<div class="empty">Hozircha lahzalar yo\'q. Mehmonlar yuklagan suratlar shu yerda paydo bo\'ladi.</div>'; return; }
-    const bar = Store.mode !== "claude" ? `<div class="save-all"><button class="btn" type="button" id="saveAll">${ICON.dl}<span>Hammasini telefonga saqlash (${photos.length})</span></button><p class="note" id="saveNote">iPhone'da ochilgan oynada «Rasmlarni saqlash»ni tanlang</p></div>` : "";
-    tb.innerHTML = bar + `<div class="gal">${photos.map((p, i) => `<figure data-i="${i}" style="animation-delay:${Math.min(i, 20) * 40}ms"><img loading="lazy" alt="${esc(p.name)} yuborgan surat" src="${esc(p.url)}"><figcaption><b>${esc(p.name || "Mehmon")}</b><span>${fmt(p.ts)}</span></figcaption></figure>`).join("")}</div>`;
+    sel.forEach(id => { if (!photos.some(p => p.id === id)) sel.delete(id); });
+    if (!photos.length) { selecting = false; tb.innerHTML = '<div class="empty">Hozircha lahzalar yo\'q. Mehmonlar yuklagan suratlar shu yerda paydo bo\'ladi.</div>'; return; }
+    const web = Store.mode !== "claude";
+    const tools = web ? `<div class="gtools">
+        <button class="tbtn" type="button" id="selBtn">${selecting ? "Bekor qilish" : "Tanlash"}</button>
+        ${selecting ? `<button class="tbtn" type="button" id="selAll">${sel.size === photos.length ? "Tanlovni olib tashlash" : "Hammasini tanlash"}</button>` : `<button class="tbtn solid" type="button" id="saveAll">${ICON.dl}<span>Hammasini saqlash (${photos.length})</span></button>`}
+      </div>${selecting ? "" : `<p class="note gnote">iPhone'da ochilgan oynada «Rasmlarni saqlash»ni tanlang</p>`}` : "";
+    const selbar = web && selecting ? `<div class="selbar" role="toolbar">
+        <div class="sb-count">${sel.size ? `<b>${sel.size}</b> ta surat tanlandi` : "Suratlarni bosib tanlang"}</div>
+        <div class="sb-acts">
+          <button class="btn" type="button" id="selSave" ${sel.size ? "" : "disabled"}>${ICON.dl}<span>Saqlash</span></button>
+          <button class="btn danger" type="button" id="selDel" ${sel.size ? "" : "disabled"}><span>O'chirish</span></button>
+        </div></div>` : "";
+    tb.innerHTML = tools + `<div class="gal${selecting ? " selecting" : ""}">${photos.map((p, i) => `<figure data-i="${i}" class="${sel.has(p.id) ? "sel" : ""}" style="animation-delay:${Math.min(i, 20) * 30}ms"><img loading="lazy" alt="${esc(p.name)} yuborgan surat" src="${esc(p.url)}"><i class="tick" aria-hidden="true"></i><figcaption><b>${esc(p.name || "Mehmon")}</b><span>${fmt(p.ts)}</span></figcaption></figure>`).join("")}</div>` + selbar;
     tb.querySelectorAll("img").forEach(im => im.onerror = () => { im.replaceWith(Object.assign(document.createElement("div"), { className: "empty", textContent: "Surat ochilmadi" })); });
-    const sa = tb.querySelector("#saveAll");
-    if (sa) {
-      let files = null;
-      sa.onclick = async () => {
-        const lab = sa.querySelector("span");
-        if (files) {
-          sa.disabled = true;
-          try { const r = await saveFiles(files); lab.textContent = r === "cancel" ? `${files.length} ta suratni saqlash` : "Saqlandi ✓"; }
-          catch (e) { lab.textContent = "Saqlanmadi, qayta bosing"; }
-          sa.disabled = false; return;
-        }
-        // 1-bosish: suratlarni tayyorlaymiz; 2-bosish: saqlaymiz (iPhone ulashish oynasi uchun shart)
-        sa.disabled = true; let n = 0; const out = [];
-        for (const [k, p] of photos.entries()) {
-          lab.textContent = `Tayyorlanmoqda… ${++n} / ${photos.length}`;
-          try { out.push(await fileFor(p, k + 1)); } catch (e) { }
-        }
-        files = out; sa.disabled = false;
-        lab.textContent = out.length ? `${out.length} ta suratni saqlash` : "Suratlar ochilmadi";
-        if (!out.length) files = null;
+    const q = id => tb.querySelector(id);
+    if (q("#selBtn")) q("#selBtn").onclick = () => { selecting = !selecting; sel.clear(); showP(); };
+    if (q("#selAll")) q("#selAll").onclick = () => { if (sel.size === photos.length) sel.clear(); else photos.forEach(p => sel.add(p.id)); showP(); };
+    if (q("#saveAll")) saveFlow(q("#saveAll"), () => photos, n => `${n} ta suratni saqlash`);
+    if (q("#selSave")) {
+      const picked = () => photos.filter(p => sel.has(p.id));
+      picked().forEach((p) => fileFor(p, photos.indexOf(p) + 1).catch(() => { }));   // oldindan yuklab qo'yamiz
+      saveFlow(q("#selSave"), picked, n => `${n} ta suratni saqlash`);
+    }
+    if (q("#selDel")) {
+      const d = q("#selDel"), lab = d.querySelector("span");
+      d.onclick = async () => {
+        if (!d.classList.contains("sure")) { d.classList.add("sure"); lab.textContent = `Ha, ${sel.size} tasi o'chirilsin`; return; }
+        d.disabled = true; lab.textContent = "O'chirilmoqda…";
+        try {
+          const ids = [...sel]; await Store.del("photo", ids);
+          for (let i = photos.length - 1; i >= 0; i--) if (sel.has(photos[i].id)) photos.splice(i, 1);
+          sel.clear(); selecting = false; counts(); showP();
+        } catch (e) { d.disabled = false; d.classList.remove("sure"); lab.textContent = "O'chmadi, qayta bosing"; }
       };
     }
-    tb.querySelector(".gal").addEventListener("click", e => { const f = e.target.closest("figure"); if (f) lightbox(photos, +f.dataset.i, () => { counts(); showP(); }); });
+    tb.querySelector(".gal").addEventListener("click", e => {
+      const f = e.target.closest("figure"); if (!f) return;
+      const p = photos[+f.dataset.i];
+      if (selecting) { sel.has(p.id) ? sel.delete(p.id) : sel.add(p.id); showP(); return; }
+      lightbox(photos, +f.dataset.i, () => { counts(); showP(); });
+    });
   };
   const showR = () => {
     if (!answers.length) { tb.innerHTML = '<div class="empty">Hozircha javoblar yo\'q.</div>'; return; }
@@ -1204,7 +1268,7 @@ async function openHost(pin) {
 }
 
 /* ===== Rasmlarni telefonga saqlash ===== */
-const fileCache = new Map();
+const fileCache = new Map(), fileReady = new Map();
 const slug = t => (String(t || "mehmon").toLowerCase().replace(/[^a-z0-9а-яёўқғҳ]+/gi, "-").replace(/^-+|-+$/g, "").slice(0, 30) || "mehmon");
 async function fileFor(p, n) {
   if (fileCache.has(p.url)) return fileCache.get(p.url);
@@ -1213,7 +1277,7 @@ async function fileFor(p, n) {
     const b = await r.blob(), ext = (b.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
     return new File([b], `bazm-${slug(p.name)}-${n}.${ext}`, { type: b.type || "image/jpeg" });
   })();
-  fileCache.set(p.url, pr); pr.catch(() => fileCache.delete(p.url));
+  fileCache.set(p.url, pr); pr.then(f => fileReady.set(p.url, f), () => fileCache.delete(p.url));
   return pr;
 }
 // iPhone: ulashish oynasi ("Rasmni saqlash"); boshqalar: oddiy yuklab olish
