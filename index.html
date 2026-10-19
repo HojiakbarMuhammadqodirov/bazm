@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Pinyon+Script&family=Outfit:wght@400;500&display=swap">
-<link rel="preload" as="image" href="img/gate-closed.webp" fetchpriority="high">
+<link rel="preload" as="image" href="img/gate-arch-hd.webp" fetchpriority="high">
 <style>
 [hidden]{display:none!important}
 /* Layout: cream watercolor stationery. One narrow column, script headings, italic spaced-caps eyebrows, cards with corner brackets. */
@@ -278,17 +278,22 @@ body.locked .fab{opacity:0;pointer-events:none}
   --sw:max(100vw,56.2799vh);--sh:max(100vh,177.6833vw)}
 @supports (width:1cqw){#gate{--sw:max(100cqw,56.2799cqh);--sh:max(100cqh,177.6833cqw)}}
 /* sahna = gate-closed (941x1672) ning object-fit:cover o'lchami; ichidagi % lar rasmga bog'langan */
-.g-stage{position:absolute;left:50%;top:50%;width:var(--sw);height:var(--sh);margin-left:calc(var(--sw) * -.5);margin-top:calc(var(--sh) * -.5);transform-origin:50% 53%}
+/* tiniqlik: sahna kameraning ENG YAQIN (x1.55) o'lchamida joylashtiriladi va scale(1/1.55) dan scale(1) gacha
+   kattalashadi - brauzer qatlamni to'liq o'lchamda chizadi (kichikdan cho'zilgan xira bitmap emas).
+   Markaz (50% 53%) cover-sahnadagi bilan aynan bir nuqtaga tushadi. */
+.g-stage{position:absolute;left:50%;top:50%;width:calc(var(--sw) * 1.55);height:calc(var(--sh) * 1.55);margin-left:calc(var(--sw) * -.775);margin-top:calc(var(--sh) * -.7915);transform-origin:50% 53%;transform:scale(.645161)}
 .g-arch{position:absolute;inset:0;width:100%;height:100%;display:block;max-width:none}
-.g-leaves{position:absolute;inset:0;perspective:calc(var(--sw) * .62);perspective-origin:50% 54%}
+.g-leaves{position:absolute;inset:0;perspective:calc(var(--sw) * .961);perspective-origin:50% 54%}
 .g-leaf{position:absolute;top:31.8182%;height:44.9761%;display:block;max-width:none;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .g-leaf-l{left:26.3549%;width:23.5919%;transform-origin:0 50%}
 .g-leaf-r{left:49.9469%;width:24.1233%;transform-origin:100% 50%}
 /* yakuniy kadr = .sh-img img (bosh sahna) bilan aynan bir xil */
-.g-open{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;max-width:none;transform:scale(1.38);transform-origin:50% 46%;opacity:0}
+/* x1.12 kattalik transform bilan emas, quti o'lchami bilan beriladi (50% 46% nuqta joyida qoladi):
+   yakuniy kadrda transform yo'q -> rasm qurilma piksellarida to'g'ridan-to'g'ri chiziladi */
+.g-open,.sh-img img{position:absolute;inset:auto;left:-6%;top:-5.52%;width:112%;height:112%;object-fit:cover;display:block;max-width:none;transform:none;transform-origin:50% 46%}
+.g-open{opacity:0}
 .g-tone{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 50%,rgba(52,36,22,.22),rgba(34,24,16,.42))}
 .g-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(30,22,16,.22),rgba(30,22,16,0) 26%,rgba(30,22,16,.06) 52%,rgba(28,20,15,.55) 74%,rgba(24,17,12,.78))}
-#gate.run .g-stage,#gate.run .g-leaf,#gate.run .g-open,#gate.run .g-tone,#gate.run .g-shade{will-change:transform,opacity}
 #gate.gone{opacity:0;visibility:hidden;transition:opacity .42s ease,visibility 0s linear .42s}
 .g-ui{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;flex-direction:column;align-items:center;text-align:center;
   padding:0 max(22px,env(safe-area-inset-right,0px)) calc(26px + env(safe-area-inset-bottom,0px)) max(22px,env(safe-area-inset-left,0px));transition:opacity .35s ease,transform .45s ease}
@@ -331,6 +336,12 @@ h2{margin:20px 0 0;font-size:clamp(34px,9.4vw,42px)}
 .nf-meta{letter-spacing:.07em;font-size:clamp(9.5px,2.45vw,10.5px)}
 .wreath.has-art .eyebrow{font-size:11.5px;letter-spacing:.14em;max-width:64%}
 .wreath.has-art .eyebrow::before,.wreath.has-art .eyebrow::after{display:none}
+/* xiralikni yo'qotish: donadorlik faqat fonda, rasmlar ustida emas */
+.grain{z-index:1;opacity:.12}
+.ill img{filter:none}
+img{image-rendering:auto}
+.nframe.in .nf{filter:none}
+@keyframes blurin{from{opacity:0;filter:blur(5px);transform:translateY(8px)}to{opacity:1;filter:none;transform:none}}
 /* =====================================================================
    SECONDARY UI (appended after the main CSS)
    Upload-card internals, messages/banners, footer host link,
@@ -596,13 +607,13 @@ h2{margin:20px 0 0;font-size:clamp(34px,9.4vw,42px)}
 <!-- ================= DARVOZA ================= -->
 <div id="gate" role="dialog" aria-label="Taklifnoma">
   <div class="g-stage">
-    <img class="g-arch" src="img/gate-arch.webp" alt="" fetchpriority="high" decoding="async">
+    <img class="g-arch" src="img/gate-arch-hd.webp" alt="" fetchpriority="high" decoding="async">
     <div class="g-leaves" aria-hidden="true">
-      <img class="g-leaf g-leaf-l" src="img/gate-leaf-l.webp" alt="" fetchpriority="high" decoding="async">
-      <img class="g-leaf g-leaf-r" src="img/gate-leaf-r.webp" alt="" fetchpriority="high" decoding="async">
+      <img class="g-leaf g-leaf-l" src="img/gate-leaf-l-hd.webp" alt="" fetchpriority="high" decoding="async">
+      <img class="g-leaf g-leaf-r" src="img/gate-leaf-r-hd.webp" alt="" fetchpriority="high" decoding="async">
     </div>
   </div>
-  <img class="g-open" src="img/gate-open.webp" alt="" decoding="async">
+  <img class="g-open" src="img/gate-open-hd.webp" alt="" decoding="async">
   <i class="g-tone" aria-hidden="true"></i>
   <i class="g-shade" aria-hidden="true"></i>
   <div class="g-ui">
@@ -616,7 +627,7 @@ h2{margin:20px 0 0;font-size:clamp(34px,9.4vw,42px)}
 <!-- ================= SAHIFA ================= -->
 <main>
   <section class="scene-hero" id="sceneHero" aria-label="Bog' va saroy">
-    <div class="sh-img"><img src="img/gate-open.webp" alt="Atirgulli bog' va saroy" decoding="async"></div>
+    <div class="sh-img"><img src="img/gate-open-hd.webp" alt="Atirgulli bog' va saroy" decoding="async"></div>
     <div class="sh-text">
       <div class="sh-hello">Assalomu alaykum!</div>
       <i class="sh-dot" aria-hidden="true"></i>
@@ -1091,6 +1102,7 @@ const music = (() => {
 })();
 /* ===== Darvozani ochish: tavaqalar oshiq-moshiqda aylanadi, kamera ichkariga kiradi ===== */
 if ($("#gate")) document.body.classList.add("locked"); else document.body.classList.add("entered");
+(() => { const hi = $(".sh-img img"); if (hi && !/-hd\./.test(hi.getAttribute("src") || "")) hi.src = "img/gate-open-hd.webp"; })();  // bosh sahna: 2x tiniq rasm (intro bilan bir xil)
 let opened = false;
 const gateReady = (() => {            // barcha intro rasmlari oldindan decode qilinadi
   const g = $("#gate");
@@ -1119,10 +1131,12 @@ function openGate() {
     A(q(".g-shade"), [{ opacity: 1 }, { opacity: 0 }], { duration: 500, easing: "ease-out" });
     A(q(".g-leaf-l"), [{ transform: "rotateY(0deg)" }, { transform: "rotateY(86deg)" }], { duration: 1500, delay: 80, easing: swing });
     A(q(".g-leaf-r"), [{ transform: "rotateY(0deg)" }, { transform: "rotateY(-86deg)" }], { duration: 1500, delay: 150, easing: swing });
-    A(q(".g-stage"), [{ transform: "scale(1)" }, { transform: "scale(2.05)" }], { duration: 2150, delay: 120, easing: cam });
+    // kamera x1 -> x1.55 (sahna x1.55 o'lchamda chizilgan, shuning uchun 1/1.55 -> 1)
+    A(q(".g-stage"), [{ transform: "scale(.645161)" }, { transform: "scale(1)" }], { duration: 2150, delay: 120, easing: cam });
     const open = q(".g-open");
     A(open, [{ opacity: 0 }, { opacity: 1, offset: .62 }, { opacity: 1 }], { duration: 1400, delay: 900, easing: "linear" });
-    const last = A(open, [{ transform: "scale(1.17)" }, { transform: "scale(1.38)" }], { duration: 1400, delay: 900, easing: "cubic-bezier(.25,.6,.3,1)" });
+    // ochiq manzara x1.008 -> x1.12 (quti allaqachon x1.12; oxirgi kadr transformsiz = .sh-img img)
+    const last = A(open, [{ transform: "scale(.9)" }, { transform: "none" }], { duration: 1400, delay: 900, easing: "cubic-bezier(.25,.6,.3,1)" });
     let done = false; const end = () => { if (!done) { done = true; finish(); } };
     if (last && last.finished) last.finished.then(end, end);
     setTimeout(end, 2700);                           // zaxira
