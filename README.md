@@ -18,13 +18,14 @@ Rasmlar va javoblar **Vercel Blob** da saqlanadi. Supabase ham, boshqa server ha
 
 Tayyor bo'lgach, mehmonlarga `https://<loyiha>.vercel.app` havolasini yuborasiz.
 
-**Suratlarni ko'rish:** sahifaning eng pastida **"To'y egalari uchun"** tugmasini bosing va PIN'ni kiriting.
+**Suratlarni ko'rish:** `https://<loyiha>.vercel.app/#/mezbon` havolasini oching (yoki sahifa pastidagi **"To'y egalari uchun"** tugmasini bosing) va PIN'ni kiriting. Keraksiz surat yoki javobni shu yerdan o'chirish mumkin.
 
 ## Tuzilishi
 - `index.html`: butun sayt (dizayn, animatsiya, formalar)
 - `api/upload.js`: suratni Vercel Blob'ga saqlaydi
 - `api/rsvp.js`: "Kelasizmi?" javobini saqlaydi
 - `api/host.js`: PIN'ni tekshiradi va suratlar bilan javoblarni qaytaradi
+- `api/photo.js`: private suratlarni faqat PIN bilan beradi
 - `api/ping.js`: sahifa xotira ulanganini tekshirishi uchun
 - `music.m4a`: fon musiqasi (darvoza ochilganda chalinadi)
 

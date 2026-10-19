@@ -363,12 +363,20 @@ footer .fd{font-family:var(--f-sans);letter-spacing:.42em;font-size:11px;color:v
 .lb .cap button,.lb .cap a{padding:9px 14px;border:1px solid rgba(255,255,255,.35);background:none;color:#ffffff;cursor:pointer;font-family:var(--f-sans);font-style:normal;font-size:10px;letter-spacing:.24em;text-transform:uppercase;text-decoration:none}
 
 /* music */
-.music{position:fixed;z-index:40;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);cursor:pointer;display:grid;place-items:center;transition:opacity .5s}
-.eq{display:flex;align-items:flex-end;gap:3px;height:14px}
-.eq i{width:2px;height:30%;background:var(--mauve);transition:height .3s}
+.music{position:fixed;z-index:40;right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));display:inline-flex;align-items:center;gap:9px;min-height:46px;padding:0 16px 0 13px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 10px 26px -12px rgba(168,70,106,.45);cursor:pointer;color:var(--mauve);font-family:var(--f-sans);font-size:12px;font-weight:500;letter-spacing:.06em;transition:opacity .5s,background .25s,color .25s}
+.music svg{width:19px;height:19px;flex:none}
+.music .ic-on,.music.on .ic-off{display:none}
+.music.on .ic-on{display:block}
+.music.on{background:var(--mauve);color:#fff;border-color:var(--mauve)}
+.eq{display:none;align-items:flex-end;gap:2px;height:12px}
+.music.on .eq{display:flex}
+.eq i{width:2px;height:30%;background:currentColor}
 .music.on .eq i{animation:eq 1.2s ease-in-out infinite}
-.music.on .eq i:nth-child(2){animation-delay:-.4s}.music.on .eq i:nth-child(3){animation-delay:-.8s}.music.on .eq i:nth-child(4){animation-delay:-.2s}
+.music.on .eq i:nth-child(2){animation-delay:-.4s}.music.on .eq i:nth-child(3){animation-delay:-.8s}
 @keyframes eq{0%,100%{height:25%}50%{height:100%}}
+.rv-row .del,.lb .cap .del{justify-self:start;margin-top:6px;padding:7px 12px;border:1px solid rgba(169,71,76,.35);background:none;color:var(--err);font-family:var(--f-sans);font-size:10px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+.rv-row .del.sure,.lb .cap .del.sure{background:var(--err);color:#fff;border-color:var(--err)}
+.lb .cap .del{margin-top:0;border-color:rgba(255,200,205,.5);color:#ffd5da}
 body.locked .music{opacity:0;pointer-events:none}
 
 /* reveal */
@@ -541,7 +549,7 @@ body.locked .music{opacity:0;pointer-events:none}
   <button class="host-link" id="hostBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/></svg>To'y egalari uchun</button>
 </footer>
 
-<button class="music" id="music" type="button" aria-label="Musiqani yoqish yoki o'chirish"><span class="eq"><i></i><i></i><i></i><i></i></span></button>
+<button class="music" id="music" type="button" aria-pressed="false"><svg class="ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg><span class="ml">Musiqani yoqish</span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span></button>
 
 <script>
 /* ===== Sozlamalar ===== */
@@ -770,10 +778,11 @@ const music = (() => {
     // play() bosish ichida chaqiriladi, aks holda telefonlar ovozni bloklaydi
     try { a.volume = 0; } catch (e) { }
     const p = a.play();
-    on = true; btn.classList.add("on"); ramp(.85, 2500);
-    if (p && p.catch) p.catch(() => { on = false; btn.classList.remove("on"); });
+    set(true); ramp(.85, 2500);
+    if (p && p.catch) p.catch(() => set(false));
   };
-  const stop = () => { on = false; btn.classList.remove("on"); ramp(0, 600, () => a.pause()); };
+  const set = v => { on = v; btn.classList.toggle("on", v); btn.setAttribute("aria-pressed", v); btn.querySelector(".ml").textContent = v ? "Musiqani o'chirish" : "Musiqani yoqish"; };
+  const stop = () => { set(false); ramp(0, 600, () => a.pause()); };
   btn.addEventListener("click", () => on ? stop() : start());
   document.addEventListener("visibilitychange", () => { if (document.hidden && on) a.pause(); else if (!document.hidden && on) a.play().catch(() => { }); });
   return { start };
@@ -928,6 +937,7 @@ const Store = {
       return { photos, answers };
     }
     if (this.mode === "vercel") {
+      this._pin = pin;
       if (this._pre && this._pre.pin === pin) { const d = this._pre.data; this._pre = null; return d; }
       return this._api("/api/host", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ pin }) });
     }
@@ -943,6 +953,10 @@ const Store = {
     const all = async st => new Promise(ok => { const out = []; const tx = this.idb.transaction(st); tx.objectStore(st).openCursor().onsuccess = e => { const c = e.target.result; if (c) { out.push(c.value); c.continue(); } else ok(out); }; });
     const ms = await all("moments"), rs = await all("rsvp");
     return { photos: ms.map(p => ({ url: URL.createObjectURL(p.blob), blob: p.blob, name: p.name, note: p.note, ts: p.ts })), answers: rs };
+  },
+  canDelete() { return this.mode === "vercel" && !!this._pin; },
+  async del(kind, id) {
+    return this._api("/api/host", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ pin: this._pin, del: { kind, id } }) });
   },
   async save(p, filename) {
     if (this.mode === "claude" && this.downloads) {
@@ -1046,7 +1060,8 @@ function overlay(html) {
   document.body.appendChild(o); document.body.classList.add("locked");
   return { o, close };
 }
-$("#hostBtn").addEventListener("click", () => {
+function openPin() {
+  if (document.querySelector(".pin-wrap")) return;
   const { o, close } = overlay(`<div class="pin-wrap"><div class="lock">${ICON.lock}</div><div class="pin-title">To'y egalari uchun</div>
     <div class="note" style="max-width:30ch">Mehmonlar yuborgan lahzalar va javoblarni ko'rish uchun PIN kodni kiriting</div>
     <div class="dots" id="dots"><i></i><i></i><i></i><i></i></div>
@@ -1072,7 +1087,18 @@ $("#hostBtn").addEventListener("click", () => {
   o.querySelector("#pad").addEventListener("click", e => { const b = e.target.closest("button"); if (b) press(b.dataset.n); });
   const kd = e => { if (!o.isConnected) return removeEventListener("keydown", kd); if (/^\d$/.test(e.key)) press(e.key); if (e.key === "Backspace") press("del"); };
   addEventListener("keydown", kd);
-});
+}
+$("#hostBtn").addEventListener("click", openPin);
+
+// To'y egalari uchun to'g'ridan-to'g'ri havola: sayt.uz/#/mezbon
+const isHostLink = () => /^#\/?mezbon$/i.test(location.hash);
+function hostRoute() {
+  if (!isHostLink()) return;
+  const gate = $("#gate");
+  if (gate) { opened = true; gate.remove(); document.body.classList.remove("locked"); document.body.classList.add("entered"); document.body.classList.remove("pre"); document.querySelectorAll(".sprig").forEach(s => s.classList.add("in")); }
+  openPin();
+}
+addEventListener("hashchange", hostRoute);
 
 async function openHost(pin) {
   const { o } = overlay(`<div class="host"><div class="host-head"><div class="eyebrow">Mezbon paneli</div><h2><span class="gold-text">Bazm lahzalari</span></h2></div><div id="hostBody"><p class="note">Yuklanmoqda…</p></div></div>`);
@@ -1085,25 +1111,32 @@ async function openHost(pin) {
   }
   const { photos, answers } = data;
   photos.sort((a, b) => (b.ts || 0) - (a.ts || 0)); answers.sort((a, b) => (b.ts || 0) - (a.ts || 0));
-  const yes = answers.filter(a => a.going), people = yes.reduce((s, a) => s + (+a.guests || 1), 0);
-  body.innerHTML = `<div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-t="p">Lahzalar · ${photos.length}</button><button role="tab" aria-selected="false" data-t="r">Javoblar · ${answers.length}</button></div><div id="tabBody"></div>`;
+  body.innerHTML = `<div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-t="p">Lahzalar · <span id="cP">${photos.length}</span></button><button role="tab" aria-selected="false" data-t="r">Javoblar · <span id="cR">${answers.length}</span></button></div><div id="tabBody"></div>`;
+  const counts = () => { body.querySelector("#cP").textContent = photos.length; body.querySelector("#cR").textContent = answers.length; };
   const tb = body.querySelector("#tabBody");
   const fmt = ts => ts ? new Date(ts).toLocaleString("en-GB", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "";
   const showP = () => {
     if (!photos.length) { tb.innerHTML = '<div class="empty">Hozircha lahzalar yo\'q. Mehmonlar yuklagan suratlar shu yerda paydo bo\'ladi.</div>'; return; }
     tb.innerHTML = `<div class="gal">${photos.map((p, i) => `<figure data-i="${i}" style="animation-delay:${Math.min(i, 20) * 40}ms"><img loading="lazy" alt="${esc(p.name)} yuborgan surat" src="${esc(p.url)}"><figcaption><b>${esc(p.name || "Mehmon")}</b><span>${fmt(p.ts)}</span></figcaption></figure>`).join("")}</div>`;
     tb.querySelectorAll("img").forEach(im => im.onerror = () => { im.replaceWith(Object.assign(document.createElement("div"), { className: "empty", textContent: "Surat ochilmadi" })); });
-    tb.querySelector(".gal").addEventListener("click", e => { const f = e.target.closest("figure"); if (f) lightbox(photos, +f.dataset.i); });
+    tb.querySelector(".gal").addEventListener("click", e => { const f = e.target.closest("figure"); if (f) lightbox(photos, +f.dataset.i, () => { counts(); showP(); }); });
   };
   const showR = () => {
     if (!answers.length) { tb.innerHTML = '<div class="empty">Hozircha javoblar yo\'q.</div>'; return; }
-    tb.innerHTML = `<div class="rsvp-sum"><span class="chip">Keladi: ${yes.length} · ${people} kishi</span><span class="chip">Kela olmaydi: ${answers.length - yes.length}</span></div><div class="rsvp-list">${answers.map(a => `<div class="rv-row"><div class="top"><b>${esc(a.name)}</b><span class="pill ${a.going ? "yes" : "no"}">${a.going ? `Keladi · ${+a.guests || 1}` : "Kela olmaydi"}</span></div>${a.wish ? `<p>«${esc(a.wish)}»</p>` : ""}</div>`).join("")}</div>`;
+    const yes = answers.filter(a => a.going), people = yes.reduce((s, a) => s + (+a.guests || 1), 0);
+    tb.innerHTML = `<div class="rsvp-sum"><span class="chip">Keladi: ${yes.length} · ${people} kishi</span><span class="chip">Kela olmaydi: ${answers.length - yes.length}</span></div><div class="rsvp-list">${answers.map((a, i) => `<div class="rv-row"><div class="top"><b>${esc(a.name)}</b><span class="pill ${a.going ? "yes" : "no"}">${a.going ? `Keladi · ${+a.guests || 1}` : "Kela olmaydi"}</span></div>${a.wish ? `<p>«${esc(a.wish)}»</p>` : ""}${Store.canDelete() && a.id ? `<button class="del" type="button" data-i="${i}">O'chirish</button>` : ""}</div>`).join("")}</div>`;
+    tb.querySelectorAll(".rv-row .del").forEach(b => b.onclick = async () => {
+      if (!b.classList.contains("sure")) { b.classList.add("sure"); b.textContent = "Ha, o'chirilsin"; return; }
+      b.disabled = true; b.textContent = "O'chirilmoqda…";
+      try { const a = answers[+b.dataset.i]; await Store.del("rsvp", a.id); answers.splice(answers.indexOf(a), 1); counts(); showR(); }
+      catch (e) { b.disabled = false; b.textContent = "O'chmadi, qayta bosing"; b.classList.remove("sure"); }
+    });
   };
   body.querySelector(".tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; body.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b)); b.dataset.t === "p" ? showP() : showR(); });
   showP();
 }
 
-function lightbox(list, i) {
+function lightbox(list, i, onChange) {
   const lb = document.createElement("div"); lb.className = "lb"; lb.setAttribute("role", "dialog");
   lb.innerHTML = `<button class="x" type="button" aria-label="Yopish">${ICON.x}</button><img alt=""><button class="nav prev" type="button" aria-label="Oldingi">${ICON.l}</button><button class="nav next" type="button" aria-label="Keyingi">${ICON.r}</button><div class="cap"><span class="who"></span><span class="act"></span></div>`;
   const img = lb.querySelector("img");
@@ -1117,6 +1150,16 @@ function lightbox(list, i) {
       act.appendChild(b);
     } else if (Store.mode !== "claude") {
       const a = document.createElement("a"); a.href = p.url; a.target = "_blank"; a.rel = "noopener"; a.textContent = "To'liq hajmda ochish"; act.appendChild(a);
+    }
+    if (Store.canDelete() && p.id) {
+      const d = document.createElement("button"); d.type = "button"; d.className = "del"; d.textContent = "O'chirish";
+      d.onclick = async () => {
+        if (!d.classList.contains("sure")) { d.classList.add("sure"); d.textContent = "Ha, o'chirilsin"; return; }
+        d.disabled = true; d.textContent = "O'chirilmoqda…";
+        try { await Store.del("photo", p.id); list.splice(i, 1); onChange && onChange(); if (!list.length) return close(); i = Math.min(i, list.length - 1); show(); }
+        catch (e) { d.disabled = false; d.classList.remove("sure"); d.textContent = "O'chmadi, qayta bosing"; }
+      };
+      act.appendChild(d);
     }
   };
   const go = d => { i = (i + d + list.length) % list.length; show(); };
@@ -1144,6 +1187,7 @@ function lightbox(list, i) {
     banner.hidden = false; banner.textContent = "Yuklash hozir ishlamayapti. Suratlarni to'y egalariga to'g'ridan-to'g'ri yuboring.";
   }
   renderThumbs();
+  hostRoute();
 })();
 </script>
 
