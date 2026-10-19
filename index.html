@@ -840,7 +840,8 @@ async function compress(file) {
     const max = 2048, k = Math.min(1, max / Math.max(bmp.width, bmp.height));
     const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
     c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
-    const b = await new Promise(r => c.toBlob(r, "image/jpeg", .86));
+    let b = await new Promise(r => c.toBlob(r, "image/jpeg", .86));
+    if (b && b.size > 4e6) b = await new Promise(r => c.toBlob(r, "image/jpeg", .7));
     if (b) return b;
   } catch (e) { }
   if (/^image\/(jpeg|png|webp|gif)$/.test(file.type)) return file;
@@ -854,6 +855,7 @@ const Store = {
     const inArtifact = !!(window.claude && typeof window.claude.use === "function");
     if (inArtifact) return this.initClaude();
     if (CONFIG.supabase.url && CONFIG.supabase.anonKey) return this.initSupabase();
+    if (await this.initVercel()) return;
     return this.initDemo();
   },
 
@@ -880,6 +882,24 @@ const Store = {
     this.mode = "supabase"; this.canUpload = this.canRsvp = true;
   },
 
+  /* --- Vercel (Vercel Blob + /api funksiyalari) --- */
+  async initVercel() {
+    if (!/^https?:$/.test(location.protocol)) return false;
+    try {
+      const r = await fetch("/api/ping", { cache: "no-store" });
+      if (!r.ok) return false;
+      const j = await r.json();
+      this.mode = "vercel"; this.canUpload = this.canRsvp = !!j.blob;
+      if (!j.blob) this.reason = "Vercel Blob xotirasi ulanmagan. To'y egalariga xabar bering.";
+      return true;
+    } catch (e) { return false; }
+  },
+  async _api(url, opts) {
+    const r = await fetch(url, opts);
+    if (!r.ok) { let code = "upstream_error"; try { code = (await r.json()).error || code; } catch (e) { } throw { code, status: r.status }; }
+    return r.json();
+  },
+
   /* --- Namuna rejimi (faqat shu brauzer) --- */
   async initDemo() {
     this.mode = "demo"; this.canUpload = this.canRsvp = true;
@@ -893,6 +913,10 @@ const Store = {
     if (this.mode === "claude") {
       const r = await this.assets.upload(blob, { type: blob.type || "image/jpeg" });
       return { id: r.id, name: meta.name, note: meta.note, ts: Date.now() };
+    }
+    if (this.mode === "vercel") {
+      await this._api("/api/upload", { method: "POST", headers: { "content-type": blob.type || "image/jpeg", "x-name": encodeURIComponent(meta.name || ""), "x-note": encodeURIComponent(meta.note || "") }, body: blob });
+      return { id: "vercel" };
     }
     if (this.mode === "supabase") {
       const path = `${crypto.randomUUID()}.${blob.type === "image/png" ? "png" : "jpg"}`;
@@ -910,6 +934,7 @@ const Store = {
   },
   async sendRsvp(r) {
     if (this.mode === "claude") return this._appendSelf("rsvp", "answers", [{ ...r, ts: Date.now() }], { name: r.name });
+    if (this.mode === "vercel") return this._api("/api/rsvp", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(r) });
     if (this.mode === "supabase") { const { error } = await this.sb.from("rsvp").insert({ name: r.name, going: r.going, guests: r.guests, wish: r.wish }); if (error) throw error; return; }
     return this._idb("rsvp", "readwrite", st => st.add({ ...r, ts: Date.now() }));
   },
@@ -922,6 +947,10 @@ const Store = {
       ms.docs.forEach(d => (d.data().photos || []).forEach(p => photos.push({ url: "/_blob/" + p.id, id: p.id, name: p.name, note: p.note, ts: p.ts })));
       rs.docs.forEach(d => { const a = d.data().answers || []; if (a.length) answers.push(a[a.length - 1]); });
       return { photos, answers };
+    }
+    if (this.mode === "vercel") {
+      if (this._pre && this._pre.pin === pin) { const d = this._pre.data; this._pre = null; return d; }
+      return this._api("/api/host", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ pin }) });
     }
     if (this.mode === "supabase") {
       const [m, r] = await Promise.all([this.sb.rpc("host_moments", { p_pin: pin }), this.sb.rpc("host_rsvp", { p_pin: pin })]);
@@ -1051,7 +1080,12 @@ $("#hostBtn").addEventListener("click", () => {
     if (n === "del") pin = pin.slice(0, -1); else if (pin.length < 4) pin += n;
     paint(); m.textContent = "";
     if (pin.length === 4) {
-      let good = false; try { good = (await sha(pin)) === CONFIG.pinHash; } catch (e) { }
+      let good = false;
+      if (Store.mode === "vercel") {
+        // PINni server tekshiradi (Vercel'dagi HOST_PIN)
+        try { Store._pre = { pin, data: await Store.hostLoad(pin) }; good = true; }
+        catch (e) { if (e && e.code !== "bad_pin") { m.textContent = errText(e); pin = ""; paint(); return; } }
+      } else { try { good = (await sha(pin)) === CONFIG.pinHash; } catch (e) { } }
       if (!good) { dots.classList.remove("shake"); void dots.offsetWidth; dots.classList.add("shake"); m.textContent = "PIN noto'g'ri"; pin = ""; setTimeout(paint, 300); return; }
       close(); openHost(pin);
     }
@@ -1124,7 +1158,9 @@ function lightbox(list, i) {
     Store.reason = "Bu sahifada yuborish uchun claude.ai hisobingizga kirgan bo'lishingiz kerak.";
     banner.hidden = false; banner.textContent = "Suratlarni yuklash uchun claude.ai hisobingizga kiring. Bo'lmasa, suratlarni to'y egalariga to'g'ridan-to'g'ri yuboring.";
   } else if (Store.mode === "demo") {
-    banner.hidden = false; banner.textContent = "Namuna rejimi: suratlar faqat shu qurilmada saqlanadi. Haqiqiy yuklash uchun SETUP.md bo'yicha Supabase ulang.";
+    banner.hidden = false; banner.textContent = "Namuna rejimi: suratlar faqat shu qurilmada saqlanadi. Haqiqiy yuklash uchun saytni Vercel'ga joylang (README).";
+  } else if (Store.mode === "vercel" && !Store.canUpload) {
+    banner.hidden = false; banner.textContent = Store.reason;
   } else if (Store.mode === "off") {
     banner.hidden = false; banner.textContent = "Yuklash hozir ishlamayapti. Suratlarni to'y egalariga to'g'ridan-to'g'ri yuboring.";
   }
