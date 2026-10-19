@@ -90,9 +90,9 @@ button,input,textarea{font:inherit;color:inherit}
 #gate.s-open .glow{opacity:1}
 #gate.s-fly .lay.front{transform:scale(3.6);opacity:0;transition:transform 1.25s cubic-bezier(.55,0,.25,1),opacity .45s ease .75s}
 #gate.s-fly .lay.gatewrap{transform:scale(3.1);opacity:0;transition:transform 1.2s cubic-bezier(.55,0,.25,1),opacity .4s ease .7s}
-#gate.s-fly .lay.garden{transform:scale(2);transition:transform 1.3s cubic-bezier(.55,0,.25,1)}
-#gate.s-fly .lay.palace{transform:scale(1.45);transition:transform 1.3s cubic-bezier(.55,0,.25,1)}
-#gate.s-fly .lay.sky{transform:scale(1.12);transition:transform 1.3s cubic-bezier(.55,0,.25,1)}
+#gate.s-fly .lay.garden{transform:scale(1.6);transition:transform 1.3s cubic-bezier(.55,0,.25,1)}
+#gate.s-fly .lay.palace{transform:scale(1.32);transition:transform 1.3s cubic-bezier(.55,0,.25,1)}
+#gate.s-fly .lay.sky{transform:scale(1.08);transition:transform 1.3s cubic-bezier(.55,0,.25,1)}
 #flash{position:fixed;inset:0;z-index:57;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 60%,#fff 0%,#fff2f5 45%,rgba(255,230,238,0) 100%)}
 #flash.go{animation:flash .8s ease forwards}
 @keyframes flash{0%{opacity:0}45%{opacity:1}100%{opacity:0}}
@@ -384,6 +384,22 @@ body.locked .music{opacity:0;pointer-events:none}
 .car-dots button{width:10px;height:10px;padding:0;border-radius:50%;border:1px solid var(--mauve);background:transparent;cursor:pointer;transition:background .3s,transform .3s}
 .car-dots button[aria-current="true"]{background:var(--mauve);transform:scale(1.25)}
 
+/* page hero: the garden scene where the intro ends */
+.scene-hero{position:relative;height:100vh;height:100svh;overflow:hidden;padding:0;background:#fbeef1;margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)))}
+.scene-hero .scene{position:absolute;left:50%;top:50%;width:max(100vw,calc(100vh * 400 / 860));aspect-ratio:400/860;transform:translate(-50%,-50%)}
+.sh-cam{transform:scale(1.1);animation:none}
+.sh-text{position:absolute;left:0;right:0;top:calc(12% + env(safe-area-inset-top,0px));text-align:center;padding-inline:16px}
+.sh-hello{font-family:var(--f-script);font-size:clamp(44px,12vw,72px);line-height:1.1;color:var(--mauve);text-shadow:0 2px 14px rgba(255,255,255,.9)}
+.sh-sub{margin-top:8px;font-family:var(--f-sans);font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--mauve);padding-left:.34em;text-shadow:0 1px 8px rgba(255,255,255,.9)}
+.sh-cue{position:absolute;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));width:24px;height:38px;margin-left:-12px;border:1.5px solid var(--mauve);border-radius:14px;background:rgba(255,255,255,.55)}
+.sh-cue i{position:absolute;left:50%;top:7px;width:3px;height:8px;margin-left:-1.5px;border-radius:2px;background:var(--mauve);animation:wheel 1.6s ease-in-out infinite}
+@keyframes wheel{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(12px)}}
+body.entered .sh-hello{animation:rise .9s .15s both}
+body.entered .sh-sub{animation:rise .9s .35s both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+body.locked .scene-hero{visibility:hidden}
+body.locked .scene-hero .mist{animation-play-state:paused}
+
 /* thank-you modal */
 .thanks{position:fixed;inset:0;z-index:66;display:flex;align-items:center;justify-content:center;
   padding-block:max(20px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-bottom,0px));padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));
@@ -435,6 +451,12 @@ body.locked .music{opacity:0;pointer-events:none}
 
 <!-- ================= PAGE ================= -->
 <main>
+  <section class="scene-hero" id="sceneHero" aria-label="Bog' va saroy">
+    <div class="scene"><div class="cam sh-cam" id="shCam"></div></div>
+    <div class="sh-text"><div class="sh-hello">Assalomu alaykum!</div><div class="sh-sub">Qiz bazmimizga xush kelibsiz</div></div>
+    <div class="sh-cue" aria-hidden="true"><i></i></div>
+  </section>
+
   <section class="hero">
     <div class="sprig sp-h1" data-sprig="7"></div>
     <div class="sprig sp-h2" data-sprig="6"></div>
@@ -698,7 +720,19 @@ const dust = (() => {
     for (let i = 0; i < n; i++) h += rose(x + (rnd() - .5) * spread, y + (rnd() - .5) * spread * .8, rmin + rnd() * (rmax - rmin));
     return h;
   };
-  const svg = (inner, defs = "") => `<svg viewBox="0 0 400 860" preserveAspectRatio="none" aria-hidden="true"><defs>${defs}</defs>${inner}</svg>`;
+  // Akvarel effekti: chetlar bo'yoqdek notekis + qog'oz donachalari (rasm bir marta chiziladi, keyin faqat siljiydi)
+  const WC = `<filter id="wc" x="-3%" y="-3%" width="106%" height="106%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="3" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="9" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 .42  0 0 0 0 .3  0 0 0 0 .34  0 0 0 .2 0" result="gr"/>
+      <feComposite in="gr" in2="d" operator="in" result="gi"/>
+      <feMorphology in="d" operator="erode" radius=".6" result="e"/>
+      <feComposite in="d" in2="e" operator="out" result="edge"/>
+      <feColorMatrix in="edge" type="matrix" values=".8 0 0 0 0  0 .7 0 0 0  0 0 .75 0 0  0 0 0 .35 0" result="pool"/>
+      <feMerge><feMergeNode in="d"/><feMergeNode in="pool"/><feMergeNode in="gi"/></feMerge>
+    </filter>`;
+  const svg = (inner, defs = "") => `<svg viewBox="0 0 400 860" preserveAspectRatio="none" aria-hidden="true"><defs>${defs}${WC}</defs><g filter="url(#wc)">${inner}</g></svg>`;
 
   /* --- osmon --- */
   const sky = svg(`<rect width="400" height="860" fill="url(#sk)"/><circle cx="200" cy="470" r="150" fill="url(#sun)"/>`,
@@ -837,15 +871,65 @@ const dust = (() => {
 
   // Har bir qatlam bir marta rasmga aylanadi: kamera harakatida minglab shakl qayta chizilmaydi
   const img = svgStr => `<img alt="" decoding="sync" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgStr.replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" '))}">`;
+  window.SceneLayers = { sky: img(sky), palace: img(palace), garden: img(garden) };
   $("#scene").innerHTML = `<div class="cam">
-      <div class="lay sky">${img(sky)}</div>
-      <div class="lay palace">${img(palace)}<i class="mist m2"></i><i class="mist m1"></i></div>
-      <div class="lay garden">${img(garden)}<i class="mist m3"></i></div>
+      <div class="lay sky">${SceneLayers.sky}</div>
+      <div class="lay palace">${SceneLayers.palace}<i class="mist m2"></i><i class="mist m1"></i></div>
+      <div class="lay garden">${SceneLayers.garden}<i class="mist m3"></i></div>
       <div class="lay gatewrap"><i class="glow"></i><div class="leafg l">${img(leafSvg(false))}</div><div class="leafg r">${img(leafSvg(true))}</div></div>
       <div class="lay front">${img(front)}</div>
       <div class="lay couplewrap"><div class="couple"><svg viewBox="-20 0 140 222" aria-hidden="true">${couple("ci")}</svg></div></div>
     </div>`;
 
+})();
+
+/* ===== Sahifa boshidagi bog' manzarasi (introning oxirgi kadri) ===== */
+(() => {
+  const L = window.SceneLayers; if (!L) return;
+  $("#shCam").innerHTML = `<div class="lay sky" style="transform:scale(1.08)">${L.sky}</div>
+    <div class="lay palace" style="transform:scale(1.32)">${L.palace}<i class="mist m2"></i><i class="mist m1"></i></div>
+    <div class="lay garden" style="transform:scale(1.6)">${L.garden}<i class="mist m3"></i></div>`;
+})();
+
+/* ===== Sahna qatlamlarini bir marta PNG'ga aylantirish (kamera harakatida qayta chizilmasin) ===== */
+(() => {
+  const cache = new Map();
+  const PRE = "data:image/svg+xml;charset=utf-8,";
+  const toBitmap = src => {
+    if (cache.has(src)) return cache.get(src);
+    const pr = new Promise((ok, no) => {
+      try {
+        // SVG kerakli piksel o'lchamida chizilishi uchun width/height qo'yamiz (aks holda 300x150 dan cho'ziladi)
+        const svgText = decodeURIComponent(src.slice(PRE.length));
+        const vb = (svgText.match(/viewBox="([^"]+)"/) || [])[1]; if (!vb) return no();
+        const [, , vw, vh] = vb.split(/\s+/).map(Number);
+        const dpr = Math.min(devicePixelRatio || 1, 2), sw = ($("#scene") ? $("#scene").getBoundingClientRect().width : innerWidth) || innerWidth;
+        const w = Math.round(sw * (vw / 400) * dpr), h = Math.round(w * vh / vw);
+        const sized = svgText.replace("<svg ", `<svg width="${w}" height="${h}" `);
+        const im = new Image();
+        im.onload = () => {
+          try {
+            const c = document.createElement("canvas"); c.width = w; c.height = h;
+            c.getContext("2d").drawImage(im, 0, 0, w, h);
+            c.toBlob(bl => bl ? ok(URL.createObjectURL(bl)) : no(), "image/png");
+          } catch (e) { no(e); }
+        };
+        im.onerror = no; im.src = PRE + encodeURIComponent(sized);
+      } catch (e) { no(e); }
+    });
+    cache.set(src, pr); return pr;
+  };
+  // Birma-bir aylantiramiz; darvoza ochila boshlasa to'xtaymiz (animatsiya bilan to'qnashmasin)
+  const swap = async () => {
+    const els = [...document.querySelectorAll('#scene .front img, #scene .garden img, #scene .palace img, #scene .sky img, #scene .leafg img, #shCam img')];
+    for (const el of els) {
+      if (typeof opened !== "undefined" && opened && !document.body.classList.contains("entered")) return;
+      const src = el.getAttribute("src"); if (!src || !src.startsWith(PRE)) continue;
+      try { el.src = await toBitmap(src); if (el.decode) await el.decode().catch(() => { }); } catch (e) { }
+      await new Promise(r => setTimeout(r, 30));
+    }
+  };
+  (window.requestIdleCallback || (f => setTimeout(f, 60)))(swap);
 })();
 
 /* ===== "Sevgi lahzalari" karuseli ===== */
@@ -1029,14 +1113,13 @@ function openGate() {
   music.start();
   gate.classList.add("s-open");
   at(900, () => dust.stream(r.left + r.width / 2, r.top + r.height * .55, 900));
-  at(2050, () => gate.classList.add("s-fly"));
-  at(2650, () => $("#flash").classList.add("go"));
-  at(2800, () => {
+  at(1950, () => gate.classList.add("s-fly"));
+  at(3150, () => {
     gate.classList.add("gone"); document.body.classList.remove("locked");
     document.body.classList.add("entered"); document.body.classList.remove("pre");
     document.querySelectorAll(".hero .sprig").forEach(s => s.classList.add("in"));
   });
-  at(3500, () => gate.remove());
+  at(3900, () => gate.remove());
 }
 $("#scene").addEventListener("click", openGate);
 $("#openBtn").addEventListener("click", openGate);
