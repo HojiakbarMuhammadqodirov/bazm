@@ -53,101 +53,51 @@ button,input,textarea{font:inherit;color:inherit}
 .grain{position:fixed;inset:0;z-index:58;pointer-events:none;background-image:var(--grain);background-size:180px;opacity:.28}
 #dust{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:55}
 
-/* ---------- gate ---------- */
-#gate{--gold:#d0607f; --gold-hi:#a63d5c; --gold-lo:#eab2c1; --cream:#5b2338; --muted:#a87283; --wine:#e0718f; --wine-hi:#ffb3c6; --line:rgba(208,96,127,.30); --line-soft:rgba(208,96,127,.14); --gold-grad:linear-gradient(100deg,#9e3355 0%,#d5617f 22%,#f191ab 40%,#c9a07c 55%,#b8456a 72%,#e27b98 100%); --btn-grad:linear-gradient(100deg,#c24b6e 0%,#e27896 45%,#d0607f 70%,#b13f63 100%); --tile:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"%3E%3Cg fill="none" stroke="%23d0607f" stroke-width=".7" opacity=".55"%3E%3Cpath d="M18 18h20v20H18z"/%3E%3Cpath d="M28 13.9 42.1 28 28 42.1 13.9 28z"/%3E%3Cpath d="M0 0l13.9 13.9M56 0 42.1 13.9M0 56l13.9-13.9M56 56 42.1 42.1M28 0v13.9M28 56V42.1M0 28h13.9M56 28H42.1"/%3E%3Ccircle cx="28" cy="28" r="4"/%3E%3C/g%3E%3C/svg%3E');--f-caps:var(--f-sans);--f-script:"Pinyon Script",cursive;color:var(--cream);position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,2.6vh,26px);
-  padding-block:max(20px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-bottom,0px));
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
-  background:radial-gradient(70% 55% at 50% 52%,#fffafb 0%,#fde6ed 60%,#f7d1dc 100%);overflow:hidden;transition:opacity .55s ease,visibility 0s linear .55s}
+/* ---------- gate: illustrated garden scene ---------- */
+#gate{position:fixed;inset:0;z-index:50;overflow:hidden;background:#fbeef1;transition:opacity .6s ease,visibility 0s linear .6s}
 #gate.gone{opacity:0;visibility:hidden}
-#gate::before{content:"";position:absolute;inset:0;background:var(--tile);background-size:70px;opacity:.06;pointer-events:none}
-.gate-eyebrow{font-family:var(--f-caps);letter-spacing:.42em;font-size:12px;color:var(--gold);text-transform:uppercase;padding-left:.42em;position:relative;transition:opacity .6s,transform .8s}
-.gate-names{z-index:3;font-family:var(--f-script);font-size:clamp(30px,8.4vw,60px);max-width:100%;line-height:1;text-align:center;position:relative;transition:opacity .6s,transform .8s}
-.gate-names span{color:var(--gold);font-size:.6em;margin:0 .2em}
-.portal{position:relative;width:min(70vw,300px,46vh);aspect-ratio:3/4.3;transition:transform .8s cubic-bezier(.55,0,.2,1),opacity .6s ease .15s;will-change:transform}
-.peshtaq{position:absolute;inset:-7% -9% -3%;pointer-events:none}
-.doorway{position:absolute;inset:0;perspective:760px;
-  clip-path:polygon(50% 0,38% 2.6%,27% 7%,17% 13%,9% 20%,3.5% 29%,0 39%,0 100%,100% 100%,100% 39%,96.5% 29%,91% 20%,83% 13%,73% 7%,62% 2.6%)}
-.light{position:absolute;inset:0;background:radial-gradient(50% 45% at 50% 60%,#ffffff 0%,#fff2f5 38%,#f9d3de 72%,#f0b3c5 100%);opacity:.0;transition:opacity .6s ease}
-.leaf{position:absolute;top:0;bottom:0;width:50%;
-  background:var(--tile),linear-gradient(180deg,#fbe1e8,#f5c9d5 55%,#f9d8e1);background-size:30px,100%;
-  box-shadow:inset 0 0 40px rgba(190,80,115,.25);transition:transform 1.05s cubic-bezier(.5,0,.15,1);backface-visibility:visible;will-change:transform}
-.leaf::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(120,30,60,.0),rgba(120,30,60,.0));opacity:0;transition:opacity 1.05s ease;pointer-events:none}
-.leaf.l::after{background:linear-gradient(90deg,rgba(150,50,85,.05),rgba(150,50,85,.45))}
-.leaf.r::after{background:linear-gradient(270deg,rgba(150,50,85,.05),rgba(150,50,85,.45))}
-#gate.opening .leaf::after{opacity:1}
-.leaf.l{left:0;transform-origin:0 50%;border-right:1px solid rgba(190,80,115,.35)}
-.leaf.r{right:0;transform-origin:100% 50%;border-left:1px solid rgba(208,96,127,.25)}
-.leaf .pn{position:absolute;left:14%;right:14%;border:1px solid var(--line);box-shadow:inset 0 0 0 4px rgba(255,255,255,.55),inset 0 0 0 5px var(--line-soft)}
-.leaf .pn.a{top:26%;height:30%;border-radius:50% 50% 4px 4px/24% 24% 4px 4px}
-.leaf .pn.b{top:62%;height:30%;border-radius:4px}
-.leaf .pn.a::after{content:"";position:absolute;inset:22% 24%;border:1px solid var(--line);transform:rotate(45deg) scale(.7);border-radius:2px}
-.leaf .knock{position:absolute;top:57%;width:18px;height:18px;border-radius:50%;border:2px solid var(--gold);box-shadow:0 0 8px rgba(208,96,127,.45),inset 0 0 4px rgba(0,0,0,.6)}
-.leaf.l .knock{right:9%}.leaf.r .knock{left:9%}
-.seal{position:absolute;left:50%;top:50%;width:80px;height:80px;margin:-40px 0 0 -40px;z-index:4;border:0;padding:0;background:none;cursor:pointer;border-radius:50%;animation:beat 1.6s ease-in-out infinite}
-.seal::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid #fff;pointer-events:none;animation:hintring 2.4s ease-out infinite}
-@keyframes hintring{0%{transform:scale(.95);opacity:.95}100%{transform:scale(2);opacity:0}}
-@keyframes beat{0%,45%,100%{transform:scale(1)}12%{transform:scale(1.1)}24%{transform:scale(1.02)}34%{transform:scale(1.08)}}
-.seal .half{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;
-  background:radial-gradient(circle at 35% 30%,var(--wine-hi),var(--wine) 55%,#b94a6b 100%);
-  box-shadow:0 8px 20px rgba(160,50,85,.35),inset 0 -3px 8px rgba(120,20,50,.35),inset 0 2px 5px rgba(255,255,255,.45);
-  transition:transform .65s cubic-bezier(.4,0,.6,1),opacity .45s ease .1s;will-change:transform}
-.seal .half::before{content:"";position:absolute;inset:7px;border-radius:50%;border:1px dashed rgba(255,255,255,.6)}
-.seal .half.l{clip-path:polygon(0 0,52% 0,46% 18%,56% 34%,45% 52%,55% 70%,47% 86%,52% 100%,0 100%)}
-.seal .half.r{clip-path:polygon(52% 0,100% 0,100% 100%,52% 100%,47% 86%,55% 70%,45% 52%,56% 34%,46% 18%)}
-.seal b{position:relative;font-family:var(--f-script);font-weight:400;font-size:28px;color:#fff;text-shadow:0 1px 1px rgba(120,20,50,.45);letter-spacing:-.02em}
-.ribbon{position:absolute;left:-6%;right:-6%;top:50%;height:24px;margin-top:-12px;z-index:3;pointer-events:none;display:flex}
-.ribbon.v{left:50%;right:auto;top:-4%;bottom:-4%;width:24px;height:auto;margin:0 0 0 -12px;flex-direction:column}
-.ribbon i{flex:1;background:linear-gradient(180deg,#fdd6e0 0%,#ee93ad 32%,#f9bccc 52%,#d6688a 100%);box-shadow:0 4px 10px rgba(170,60,95,.28);transition:transform 1.1s cubic-bezier(.6,0,.25,1),opacity .7s ease .35s}
-.ribbon.v i{background:linear-gradient(90deg,#fdd6e0 0%,#ee93ad 32%,#f9bccc 52%,#d6688a 100%)}
-.ribbon i:first-child{transform-origin:0 50%}.ribbon i:last-child{transform-origin:100% 50%}
-.ribbon.v i:first-child{transform-origin:50% 0}.ribbon.v i:last-child{transform-origin:50% 100%}
-.bow{position:absolute;left:50%;top:50%;width:160px;height:110px;margin:-48px 0 0 -80px;z-index:3;pointer-events:none;overflow:visible;filter:drop-shadow(0 6px 10px rgba(170,60,95,.3));transition:transform .9s cubic-bezier(.5,-0.4,.4,1.4),opacity .6s ease .3s}
-.seam{position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1.5px;z-index:2;background:linear-gradient(transparent,#fff 25%,#fff 75%,transparent);box-shadow:0 0 14px 3px rgba(255,190,210,.9);opacity:.35;animation:seamp 2.4s ease-in-out infinite;transition:width .6s ease,margin .6s ease,box-shadow .6s ease,opacity .6s}
-@keyframes seamp{50%{opacity:.9}}
-.rays{display:none;position:absolute;inset:-70% -110%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,255,255,.85) 0deg 5deg,rgba(255,255,255,0) 5deg 16deg);
-  -webkit-mask:radial-gradient(closest-side,#000 0,transparent 75%);mask:radial-gradient(closest-side,#000 0,transparent 75%);opacity:0;animation:spin 22s linear infinite;transition:opacity 1.2s ease}
-#flash{position:fixed;inset:0;z-index:57;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 55%,#fff 0%,#fff1f5 40%,rgba(255,225,235,0) 100%)}
-#flash.go{animation:flash .75s ease forwards}
-@keyframes flash{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
-.gate-date{font-family:var(--f-caps);letter-spacing:.3em;font-size:13px;color:var(--muted);transition:opacity .6s}
-.btn-open{position:relative;display:inline-flex;align-items:center;gap:12px;padding:14px 26px;border:1px solid var(--gold);background:rgba(208,96,127,.06);color:var(--gold-hi);
-  font-family:var(--f-caps);letter-spacing:.28em;font-size:12px;text-transform:uppercase;cursor:pointer;overflow:hidden;transition:background .3s,opacity .5s}
-.btn-open::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.7) 50%,transparent 70%);transform:translateX(-120%);animation:sheen 3.2s ease-in-out infinite}
-.btn-open:hover{background:rgba(208,96,127,.14)}
-@keyframes sheen{60%,100%{transform:translateX(120%)}}
-.gate-hint{font-size:14px;font-style:italic;color:var(--muted);transition:opacity .5s}
-#gate.s1 .seal{animation:none;pointer-events:none}
-#gate.s1 .seal::after{display:none}
-#gate.s1 .seal .half.l{transform:translate(-80px,170px) rotate(-70deg);opacity:0}
-#gate.s1 .seal .half.r{transform:translate(80px,180px) rotate(64deg);opacity:0}
-#gate.s1 .bow{transform:scale(1.4) rotate(-12deg);opacity:0}
-#gate.s1 .ribbon:not(.v) i:first-child{transform:translateX(-30%) scaleX(.05) skewY(10deg);opacity:0}
-#gate.s1 .ribbon:not(.v) i:last-child{transform:translateX(30%) scaleX(.05) skewY(-10deg);opacity:0}
-#gate.s1 .ribbon.v i:first-child{transform:translateY(-30%) scaleY(.05) skewX(10deg);opacity:0}
-#gate.s1 .ribbon.v i:last-child{transform:translateY(30%) scaleY(.05) skewX(-10deg);opacity:0}
-#gate.s1 .btn-open,#gate.s1 .gate-hint,#gate.s1 .gate-date{opacity:0;pointer-events:none}
-#gate.s2 .seam{animation:none;opacity:1;width:16px;margin-left:-8px;box-shadow:0 0 50px 18px rgba(255,205,222,1)}
-#gate.s2 .rays{opacity:1}
-#gate.s2 .light{opacity:.7}
-#gate.opening .seam{opacity:0}
-#gate.opening .leaf.l{transform:rotateY(78deg)}
-#gate.opening .leaf.r{transform:rotateY(-78deg)}
-#gate.opening .light{opacity:1}
-#gate.through .portal{transform:scale(2.6) translateY(4%);opacity:0}
-#gate.through .gate-eyebrow{opacity:0;transform:translateY(-30px)}
-#gate.through .gate-names{opacity:0;transform:translateY(-20px)}
+.scene{position:absolute;left:50%;top:50%;width:max(100vw,calc(100vh * 400 / 860));aspect-ratio:400/860;transform:translate(-50%,-50%)}
+.cam{position:absolute;inset:0;transform-origin:50% 63%;animation:kenburns 9s ease-in-out infinite alternate;transition:transform 1s cubic-bezier(.5,0,.2,1)}
+@keyframes kenburns{to{transform:scale(1.035)}}
+.lay{position:absolute;inset:0;transform-origin:50% 63%;will-change:transform}
+.lay>img{position:absolute;inset:0;width:100%;height:100%;display:block;max-width:none}
+.mist{position:absolute;left:-20%;right:-20%;height:9%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0));animation:drift 11s ease-in-out infinite alternate}
+.mist.m1{top:58.5%}.mist.m2{top:54%;height:7%;opacity:.8;animation-duration:14s;animation-direction:alternate-reverse}.mist.m3{top:61.5%;height:6%;opacity:.7;animation-duration:9s}
+@keyframes drift{from{transform:translateX(-6%)}to{transform:translateX(6%)}}
+.glow{position:absolute;left:25%;width:50%;top:30%;height:52%;background:radial-gradient(50% 45% at 50% 62%,rgba(255,255,255,.95),rgba(255,240,245,0) 70%);opacity:0;transition:opacity .9s ease}
+.gatewrap{perspective:700px}
+.leafg{position:absolute;top:33.14%;height:48.84%;width:25%;transition:transform 1.15s cubic-bezier(.45,0,.2,1);will-change:transform;backface-visibility:visible}
+.leafg img{width:100%;height:100%;display:block;max-width:none}
+.leafg.l{left:25%;transform-origin:0 50%}
+.leafg.r{left:50%;transform-origin:100% 50%}
+.g-ui{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;
+  padding:110px max(16px,env(safe-area-inset-right,0px)) calc(34px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  background:linear-gradient(180deg,rgba(74,34,52,0),rgba(74,34,52,.42) 45%,rgba(60,24,40,.66));color:#fff;transition:opacity .35s ease,transform .5s ease}
+.g-top{position:absolute;top:0;left:0;right:0;z-index:3;padding-top:calc(26px + env(safe-area-inset-top,0px));text-align:center;transition:opacity .35s ease}
+.g-top .caps{color:#fff;text-shadow:0 1px 8px rgba(74,34,52,.45)}
+.g-names{font-family:var(--f-script);font-size:clamp(40px,11vw,62px);line-height:1.05;text-shadow:0 2px 18px rgba(40,10,25,.45)}
+.g-names em{font-style:normal;font-size:.6em;margin:0 .15em;color:#f6d3db}
+.g-date{font-family:var(--f-sans);font-size:11px;letter-spacing:.42em;padding-left:.42em;opacity:.9}
+.btn-open{display:inline-flex;align-items:center;gap:12px;margin-top:6px;padding:15px 26px;border:1px solid rgba(255,255,255,.75);background:rgba(255,255,255,.1);color:#fff;
+  font-family:var(--f-sans);font-size:11px;font-weight:500;letter-spacing:.32em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.btn-open:hover{background:rgba(255,255,255,.2)}
+.btn-open svg{width:16px;height:10px}
+#gate.s-open .g-ui{opacity:0;transform:translateY(20px);pointer-events:none}
+#gate.s-open .g-top{opacity:0}
+#gate.s-open .cam{animation:none;transform:scale(1.1)}
+#gate.s-open .leafg.l{transform:rotateY(80deg)}
+#gate.s-open .leafg.r{transform:rotateY(-80deg)}
+#gate.s-open .glow{opacity:1}
+#gate.s-fly .lay.front{transform:scale(3.6);opacity:0;transition:transform 1.25s cubic-bezier(.55,0,.25,1),opacity .45s ease .75s}
+#gate.s-fly .lay.gatewrap{transform:scale(3.1);opacity:0;transition:transform 1.2s cubic-bezier(.55,0,.25,1),opacity .4s ease .7s}
+#gate.s-fly .lay.garden{transform:scale(2);transition:transform 1.3s cubic-bezier(.55,0,.25,1)}
+#gate.s-fly .lay.palace{transform:scale(1.45);transition:transform 1.3s cubic-bezier(.55,0,.25,1)}
+#gate.s-fly .lay.sky{transform:scale(1.12);transition:transform 1.3s cubic-bezier(.55,0,.25,1)}
+#flash{position:fixed;inset:0;z-index:57;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 60%,#fff 0%,#fff2f5 45%,rgba(255,230,238,0) 100%)}
+#flash.go{animation:flash .8s ease forwards}
+@keyframes flash{0%{opacity:0}45%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.cam,.mist{animation:none}}
 
-/* blooms */
-.bloom{will-change:transform;position:absolute;pointer-events:none;z-index:2;animation:sway 8s ease-in-out infinite}
-.bloom svg{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 8px 12px rgba(190,80,115,.22))}
-@keyframes sway{50%{transform:rotate(3deg) translateY(-4px)}}
-.b-gtl{top:-2%;left:-24%;width:54%}
-.b-gbr{bottom:-9%;right:-24%;width:58%;scale:-1 1}
-.b-htl{top:3%;left:-70px;width:min(52vw,300px);opacity:.95}
-.b-hbr{bottom:6%;right:-70px;width:min(48vw,280px);scale:-1 -1}
-.b-itr{top:-92px;right:-36px;width:140px;scale:-1 1}
-.b-ibl{bottom:-84px;left:-36px;width:130px;scale:1 -1}
-.b-foot{position:relative;display:block;margin:0 auto -6px;width:190px}
 /* ---------- page ---------- */
 .caps{font-family:var(--f-sans);font-weight:400;font-size:11px;letter-spacing:.42em;text-transform:uppercase;padding-left:.42em;color:var(--mauve)}
 main{position:relative;z-index:2;overflow-x:clip;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -449,31 +399,13 @@ body.locked .music{opacity:0;pointer-events:none}
 
 <!-- ================= GATE ================= -->
 <div id="gate" role="dialog" aria-label="Taklifnoma">
-  <div class="gate-eyebrow">Qiz bazmi</div>
-  <div class="gate-names">Rustamjon<span>&amp;</span>Madinabonu</div>
-  <div class="portal">
-    <svg class="peshtaq" viewBox="0 0 100 130" preserveAspectRatio="none" aria-hidden="true">
-      <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c98a74"/><stop offset=".45" stop-color="#f7c9d5"/><stop offset="1" stop-color="#c2577a"/></linearGradient></defs>
-      <g fill="none" stroke="url(#gg)" vector-effect="non-scaling-stroke">
-        <rect x="1" y="1" width="98" height="128" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
-        <rect x="4" y="4" width="92" height="122" stroke-width=".6" opacity=".6" vector-effect="non-scaling-stroke"/>
-        <path d="M9.5 127V44.5 L12.6 33.6 18.2 24 26.6 15.6 36.3 9.3 46.6 5.6 50 4.9 53.4 5.6 63.7 9.3 73.4 15.6 81.8 24 87.4 33.6 90.5 44.5V127" stroke-width="1.4" vector-effect="non-scaling-stroke"/>
-      </g>
-    </svg>
-    <div class="doorway">
-      <div class="light"></div>
-      <div class="rays"></div>
-      <div class="leaf l"><div class="pn a"></div><div class="pn b"></div><span class="knock"></span></div>
-      <div class="leaf r"><div class="pn a"></div><div class="pn b"></div><span class="knock"></span></div>
-      <div class="seam"></div>
-    </div>
-    <div class="bloom b-gtl"></div><div class="bloom b-gbr"></div>
-    <button class="seal" id="seal" type="button" aria-label="Muhrni ochish"><span class="half l"><b>R&amp;M</b></span><span class="half r"><b>R&amp;M</b></span></button>
+  <div class="scene" id="scene"></div>
+  <div class="g-top"><div class="caps">Qiz bazmi</div></div>
+  <div class="g-ui">
+    <div class="g-names">Rustamjon <em>&amp;</em> Madinabonu</div>
+    <div class="g-date">25 · 10 · 2026</div>
+    <button class="btn-open" id="openBtn" type="button">Taklifnomani ochish <svg viewBox="0 0 16 10" fill="none" stroke="currentColor" aria-hidden="true"><path d="M0 5h15M11 1l4 4-4 4"/></svg></button>
   </div>
-  <div class="gate-date">25 · 10 · 2026</div>
-  <button class="btn-open" id="openBtn" type="button">Taklifnomani ochish
-    <svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor"><path d="M0 5h15M11 1l4 4-4 4"/></svg></button>
-  <div class="gate-hint">muhrni bosing · ovozni yoqing</div>
 </div>
 
 <!-- ================= PAGE ================= -->
@@ -710,27 +642,140 @@ const dust = (() => {
   };
 })();
 
-/* ===== Gul guldastalari (SVG) ===== */
+/* ===== Kirish sahnasi: atirgulli ark, temir darvoza, bog' va saroy (SVG) ===== */
 (() => {
-  let uid = 0;
-  const flower = (cx, cy, r, tone) => {
-    const id = "fg" + (uid++), [a, b, c] = tone;
-    let h = `<defs><radialGradient id="${id}" cx="50%" cy="80%" r="90%"><stop offset="0" stop-color="${c}"/><stop offset=".55" stop-color="${b}"/><stop offset="1" stop-color="${a}"/></radialGradient></defs><g transform="translate(${cx} ${cy})">`;
-    const ring = (n, rr, off, sc) => { for (let i = 0; i < n; i++) { const ang = i * 360 / n + off; h += `<path transform="rotate(${ang.toFixed(1)}) scale(${sc})" d="M0 0C${-rr * .75} ${-rr * .25} ${-rr * .6} ${-rr * 1.05} 0 ${-rr}C${rr * .6} ${-rr * 1.05} ${rr * .75} ${-rr * .25} 0 0Z" fill="url(#${id})" stroke="${a}" stroke-opacity=".35" stroke-width=".6"/>`; } };
-    ring(8, r, 0, 1); ring(7, r * .78, 20, 1); ring(6, r * .55, 8, 1); ring(5, r * .34, 30, 1);
-    h += `<circle r="${r * .14}" fill="${a}" opacity=".55"/></g>`;
-    return h;
+  let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const f = n => n.toFixed(1);
+  const PAL = {
+    blush: ["#f7d7de", "#efbccb", "#d98ea4"], dusty: ["#eab0bf", "#d98ea3", "#b65d7a"],
+    ivory: ["#fdf3ef", "#f3dfda", "#dcbab8"], deep: ["#cf6f8b", "#b24f6f", "#8a3352"]
   };
-  const leaf = (x0, y0, len, ang) => `<path transform="translate(${x0} ${y0}) rotate(${ang})" d="M0 0C${len * .3} ${-len * .22} ${len * .7} ${-len * .2} ${len} 0C${len * .7} ${len * .2} ${len * .3} ${len * .22} 0 0Z" fill="#a9c2a5" stroke="#86a283" stroke-width=".6"/><path transform="translate(${x0} ${y0}) rotate(${ang})" d="M2 0H${len * .9}" stroke="#86a283" stroke-width=".5"/>`;
-  const PINK = ["#d0607f", "#f4a3b8", "#ffe4ea"], BLUSH = ["#e590a6", "#fbc9d6", "#fff5f7"], DEEP = ["#b23f62", "#e47693", "#ffc2d1"], CREAM = ["#e3b9a4", "#f9e3d6", "#fffaf6"];
-  const cluster = () => {
+  const pals = ["blush", "dusty", "ivory", "blush", "deep", "ivory", "dusty"];
+  const rose = (x, y, r, p) => {
+    const [a, b, c] = PAL[p || pals[Math.floor(rnd() * pals.length)]];
+    return `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rnd() * 360)})"><circle r="${f(r)}" fill="${a}"/><circle r="${f(r * .74)}" fill="${b}"/><path d="M${f(-r * .45)} 0a${f(r * .45)} ${f(r * .45)} 0 1 1 ${f(r * .45)} ${f(r * .42)}a${f(r * .26)} ${f(r * .26)} 0 1 1 ${f(r * .2)} ${f(-r * .3)}" fill="none" stroke="${c}" stroke-width="${f(Math.max(.7, r * .1))}" stroke-linecap="round"/><circle r="${f(r * .14)}" fill="${c}"/></g>`;
+  };
+  const GREENS = ["#a9bfa3", "#8fa98b", "#7f9a7c", "#b7cab0", "#98b093"];
+  const leaf = (x, y, s, ang, col) => `<ellipse cx="${f(x)}" cy="${f(y)}" rx="${f(s)}" ry="${f(s * .42)}" transform="rotate(${f(ang)} ${f(x)} ${f(y)})" fill="${col || GREENS[Math.floor(rnd() * GREENS.length)]}"/>`;
+  const cluster = (x, y, spread, n, rmin, rmax) => {
     let h = "";
-    [[-30, 18, 34, 200], [62, -40, 30, -40], [58, 34, 26, 30], [-52, -28, 28, 230], [18, 60, 24, 80], [-8, -62, 22, -100]].forEach(l => h += leaf(...l));
-    h += flower(-30, 6, 34, BLUSH) + flower(30, -12, 30, PINK) + flower(18, 34, 20, CREAM) + flower(-6, -30, 18, DEEP) + flower(52, 14, 14, BLUSH);
-    for (let i = 0; i < 9; i++) { const ang = i * 40, rr = 66 + (i % 3) * 8; h += `<circle cx="${(Math.cos(ang) * rr).toFixed(1)}" cy="${(Math.sin(ang) * rr * .7).toFixed(1)}" r="${2 + i % 3}" fill="#f4a3b8" opacity=".8"/>`; }
+    for (let i = 0; i < n * 1.6; i++) h += leaf(x + (rnd() - .5) * spread * 1.3, y + (rnd() - .5) * spread, 5 + rnd() * 7, rnd() * 180);
+    for (let i = 0; i < n; i++) h += rose(x + (rnd() - .5) * spread, y + (rnd() - .5) * spread * .8, rmin + rnd() * (rmax - rmin));
     return h;
   };
-  document.querySelectorAll(".bloom").forEach((el, i) => { el.innerHTML = `<svg viewBox="-90 -80 180 160" aria-hidden="true">${cluster()}</svg>`; el.style.animationDelay = (-i * 1.7) + "s"; });
+  const svg = (inner, defs = "") => `<svg viewBox="0 0 400 860" preserveAspectRatio="none" aria-hidden="true"><defs>${defs}</defs>${inner}</svg>`;
+
+  /* --- osmon --- */
+  const sky = svg(`<rect width="400" height="860" fill="url(#sk)"/><circle cx="200" cy="470" r="150" fill="url(#sun)"/>`,
+    `<linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f8dfe6"/><stop offset=".55" stop-color="#fff6f4"/><stop offset="1" stop-color="#fbeee9"/></linearGradient>
+     <radialGradient id="sun"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>`);
+
+  /* --- saroy, sarv daraxtlari --- */
+  const cypress = (x, base, h, w) => `<path d="M${x} ${base}C${x - w} ${base - h * .3} ${x - w * .7} ${base - h * .8} ${x} ${base - h}C${x + w * .7} ${base - h * .8} ${x + w} ${base - h * .3} ${x} ${base}Z" fill="#9db199"/><path d="M${x} ${base}C${x + w} ${base - h * .3} ${x + w * .7} ${base - h * .8} ${x} ${base - h}" fill="#8aa186" opacity=".9"/>`;
+  let pal = "";
+  for (const [x, h, w] of [[30, 150, 15], [62, 175, 17], [96, 135, 13], [118, 160, 14], [282, 160, 14], [304, 135, 13], [338, 175, 17], [370, 150, 15]]) pal += cypress(x, 548, h, w);
+  // bino
+  const win = (x, y, w, h) => `<path d="M${x} ${y + h}V${y + w * .5}A${w / 2} ${w / 2} 0 0 1 ${x + w} ${y + w * .5}V${y + h}Z" fill="#dcb3bc"/>`;
+  pal += `<rect x="120" y="470" width="160" height="78" fill="#f7ebe9"/><rect x="120" y="470" width="160" height="5" fill="#ead6d5"/>`;
+  for (const x of [130, 147, 237, 254]) pal += win(x, 488, 12, 34);
+  pal += `<rect x="114" y="452" width="9" height="96" fill="#f3e3e1"/><path d="M112 452q6.5-14 13 0z" fill="#e7c2cc"/><rect x="277" y="452" width="9" height="96" fill="#f3e3e1"/><path d="M275 452q6.5-14 13 0z" fill="#e7c2cc"/>`;
+  pal += `<path d="M176 434C176 404 190 396 200 380C210 396 224 404 224 434Z" fill="url(#dome)"/><path d="M200 380V368" stroke="#d19aab" stroke-width="1.4"/><circle cx="200" cy="366" r="2.2" fill="#d19aab"/>`;
+  pal += `<rect x="170" y="432" width="60" height="116" fill="#f9efed"/><rect x="170" y="432" width="60" height="6" fill="#ecd7d6"/>
+          <path d="M178 548V474Q178 450 200 444Q222 450 222 474V548Z" fill="#f0dcdc"/><path d="M186 548V482Q186 465 200 459Q214 465 214 482V548Z" fill="#d3a3b0"/>`;
+  pal += `<path d="M0 548Q100 532 200 546T400 548V600H0Z" fill="#c6d4bf"/>`;
+  const palace = svg(pal, `<linearGradient id="dome" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e8bccb"/><stop offset=".45" stop-color="#f6dbe3"/><stop offset="1" stop-color="#d9a7b8"/></linearGradient>`);
+
+  /* --- bog': yo'lak, butalar, atirgullar --- */
+  const L = "M128 860C150 770 236 712 186 630S190 562 195 548", Rr = "M205 548C212 572 168 642 246 712S256 800 272 860";
+  let g = `<rect y="540" width="400" height="320" fill="url(#lawn)"/>`;
+  g += `<path d="${L}L205 548${Rr.slice(Rr.indexOf("C"))}Z" fill="#fbf0ea"/>`;
+  g += `<path d="${L}" fill="none" stroke="#b5c8ae" stroke-width="13" stroke-linecap="round"/><path d="${Rr}" fill="none" stroke="#b5c8ae" stroke-width="13" stroke-linecap="round"/>`;
+  g += `<path d="${L}" fill="none" stroke="#a3b99c" stroke-width="5" stroke-linecap="round" transform="translate(-6 0)"/><path d="${Rr}" fill="none" stroke="#a3b99c" stroke-width="5" stroke-linecap="round" transform="translate(6 0)"/>`;
+  for (const [x, y, r] of [[160, 552, 9], [240, 552, 9], [128, 560, 12], [272, 560, 12], [92, 572, 15], [308, 572, 15]]) g += `<circle cx="${x}" cy="${y}" r="${r}" fill="#a9bea2"/><circle cx="${x - r * .3}" cy="${y - r * .3}" r="${r * .45}" fill="#bccdb5"/>`;
+  {
+    const NS = "http://www.w3.org/2000/svg", tmp = document.createElementNS(NS, "svg");
+    tmp.setAttribute("style", "position:absolute;width:0;height:0;visibility:hidden"); document.body.appendChild(tmp);
+    for (const [d, off] of [[L, -6], [Rr, 6]]) {
+      const p = document.createElementNS(NS, "path"); p.setAttribute("d", d); tmp.appendChild(p);
+      const len = p.getTotalLength();
+      for (let s = 10; s < len; s += 15 + rnd() * 12) {
+        const pt = p.getPointAtLength(s), k = .45 + .55 * (pt.y - 548) / 312;
+        g += leaf(pt.x + off * k + (rnd() - .5) * 8, pt.y - 3 * k, (3 + rnd() * 3) * (.6 + k), rnd() * 180);
+        if (rnd() < .7) g += rose(pt.x + off * k + (rnd() - .5) * 6, pt.y - 5 * k, (2.2 + rnd() * 2.4) * (.6 + k));
+      }
+    }
+    tmp.remove();
+  }
+  const garden = svg(g, `<linearGradient id="lawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3e8d8"/><stop offset="1" stop-color="#eee6dc"/></linearGradient>`);
+
+  /* --- oldingi qatlam: gullar devori, tosh ark --- */
+  const cx = 200, cy = 360, ri = 100, ro = 136, ground = 712;
+  const hole = `M${cx - ri} ${ground}V${cy}A${ri} ${ri} 0 0 1 ${cx + ri} ${cy}V${ground}Z`;
+  let fr = `<path d="M0 0H400V${ground + 4}H0Z${hole}" fill="url(#wall)" fill-rule="evenodd"/>`;
+  // devordagi barg va gullar
+  const outside = (x, y) => !((y > cy ? Math.abs(x - cx) < ro + 2 : Math.hypot(x - cx, y - cy) < ro + 2) && y < ground);
+  // zich barglar (orqa qatlam), so'ng atirgul to'dalari
+  for (let i = 0; i < 1500; i++) { const x = rnd() * 410 - 5, y = rnd() * (ground + 6); if (outside(x, y)) fr += leaf(x, y, 7 + rnd() * 10, rnd() * 180); }
+  for (let i = 0; i < 46; i++) {
+    const x = rnd() * 400, y = rnd() * (ground - 30); if (!outside(x, y)) continue;
+    const n = 2 + Math.floor(rnd() * 4), p = pals[Math.floor(rnd() * pals.length)];
+    for (let k = 0; k < n; k++) fr += rose(x + (rnd() - .5) * 26, y + (rnd() - .5) * 20, 7 + rnd() * 9, p);
+  }
+  // tosh ark
+  fr += `<path d="M${cx - ro} ${ground}V${cy}A${ro} ${ro} 0 0 1 ${cx + ro} ${cy}V${ground}H${cx + ri}V${cy}A${ri} ${ri} 0 0 0 ${cx - ri} ${cy}V${ground}Z" fill="url(#stone)"/>`;
+  for (let a = 180; a <= 360; a += 15) { const t = a * Math.PI / 180; fr += `<path d="M${f(cx + Math.cos(t) * ri)} ${f(cy + Math.sin(t) * ri)}L${f(cx + Math.cos(t) * ro)} ${f(cy + Math.sin(t) * ro)}" stroke="#e2cfcb" stroke-width="1.2"/>`; }
+  for (let y = cy + 24; y < ground; y += 26) fr += `<path d="M${cx - ro} ${y}H${cx - ri}M${cx + ri} ${y}H${cx + ro}" stroke="#e2cfcb" stroke-width="1.2"/>`;
+  fr += `<path d="M${cx - ri} ${cy}A${ri} ${ri} 0 0 1 ${cx + ri} ${cy}" fill="none" stroke="#d9c3bf" stroke-width="2"/>`;
+  fr += `<rect x="${cx - ro - 6}" y="${ground - 20}" width="${ro - ri + 12}" height="22" fill="#eadbd7"/><rect x="${cx + ri - 6}" y="${ground - 20}" width="${ro - ri + 12}" height="22" fill="#eadbd7"/>`;
+  // ark ustidagi atirgullar
+  for (let a = 168; a <= 372; a += 4.2) {
+    const t = a * Math.PI / 180, rr = ro + 2 + (rnd() - .5) * 14;
+    const x = cx + Math.cos(t) * rr, y = cy + Math.sin(t) * rr;
+    fr += leaf(x + (rnd() - .5) * 14, y + (rnd() - .5) * 10, 6 + rnd() * 6, rnd() * 180) + rose(x, y, 7 + rnd() * 8);
+  }
+  for (let y = cy; y < ground - 60; y += 11) {
+    fr += rose(cx - ro + (rnd() - .5) * 10, y, 6 + rnd() * 7) + rose(cx + ro + (rnd() - .5) * 10, y + 5, 6 + rnd() * 7);
+  }
+  // osilib turgan gul shoxchalari
+  for (const a of [205, 222, 240, 262, 283, 300, 318, 334]) {
+    const t = a * Math.PI / 180, x = cx + Math.cos(t) * (ri - 2), y = cy + Math.sin(t) * (ri - 2), len = 22 + rnd() * 46;
+    fr += `<path d="M${f(x)} ${f(y)}q${f((rnd() - .5) * 10)} ${f(len / 2)} ${f((rnd() - .5) * 6)} ${f(len)}" stroke="#8fa98b" stroke-width="1" fill="none"/>`;
+    for (let k = 6; k < len; k += 7) fr += `<circle cx="${f(x + (rnd() - .5) * 6)}" cy="${f(y + k)}" r="${f(1.8 + rnd() * 1.6)}" fill="${rnd() < .5 ? "#efbccb" : "#f7d7de"}"/>`;
+  }
+  // pastki burchaklardagi atirgul butalari
+  fr += cluster(42, 760, 110, 26, 9, 18) + cluster(358, 760, 110, 26, 9, 18) + cluster(70, 840, 120, 18, 10, 20) + cluster(330, 840, 120, 18, 10, 20);
+  const front = svg(fr, `<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdcc8"/><stop offset="1" stop-color="#e1e5d6"/></linearGradient>
+     <linearGradient id="stone" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ecdfdb"/><stop offset=".5" stop-color="#f7efec"/><stop offset="1" stop-color="#e9dbd7"/></linearGradient>`);
+
+  /* --- temir darvoza qanoti (chap; o'ngi ko'zgu) --- */
+  const IRON = "#2d2228", SHEEN = "#5b4752";
+  let lf = `<g fill="none" stroke="${IRON}" stroke-linecap="round">`;
+  const topY = x => 78 - 66 * Math.pow(x / 100, 1.5);
+  for (let x = 9; x <= 91; x += 8.2) {
+    const t = topY(x);
+    lf += `<path d="M${f(x)} ${f(t)}V402" stroke-width="2.6"/><path d="M${f(x)} ${f(t - 11)}l3.2 7-3.2 4.5-3.2-4.5z" fill="${IRON}" stroke-width="1"/>`;
+  }
+  lf += `<path d="M2 ${f(topY(0))}Q60 ${f(topY(60) + 6)} 98 ${f(topY(98))}" stroke-width="4"/>`;
+  for (const [x, y] of [[20, 108], [44, 98], [70, 86]]) lf += `<path d="M${x - 9} ${y + 8}c0-12 16-14 17-3s-10 9-10 3 5-4 6-2" stroke-width="2"/><path d="M${x + 9} ${y + 8}c0-10-14-13-16-4" stroke-width="1.6"/>`;
+  lf += `<path d="M0 150H100M0 312H100" stroke-width="5"/>`;
+  for (let x = 13; x < 92; x += 16.4) lf += `<circle cx="${f(x)}" cy="231" r="5.5" stroke-width="2"/>`;
+  lf += `</g>`;
+  lf += `<rect x="0" y="312" width="100" height="98" fill="${IRON}"/><rect x="9" y="322" width="82" height="78" fill="none" stroke="${SHEEN}" stroke-width="1.2"/>
+        <path d="M50 336l16 25-16 25-16-25z" fill="none" stroke="${SHEEN}" stroke-width="1.2"/><circle cx="50" cy="361" r="5" fill="none" stroke="${SHEEN}" stroke-width="1.2"/>
+        <rect x="0" y="${f(topY(0) - 4)}" width="5" height="${f(410 - topY(0) + 4)}" fill="${IRON}"/><rect x="95" y="${f(topY(95))}" width="5" height="${f(410 - topY(95))}" fill="${IRON}"/>
+        <path d="M2 150V410" stroke="${SHEEN}" stroke-width=".8"/><circle cx="90" cy="268" r="3.2" fill="#b89268"/>`;
+  const leafSvg = mirror => `<svg viewBox="0 0 100 420" preserveAspectRatio="none" aria-hidden="true"><g${mirror ? ' transform="translate(100 0) scale(-1 1)"' : ""}>${lf}</g></svg>`;
+
+  // Har bir qatlam bir marta rasmga aylanadi: kamera harakatida minglab shakl qayta chizilmaydi
+  const img = svgStr => `<img alt="" decoding="sync" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgStr.replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" '))}">`;
+  $("#scene").innerHTML = `<div class="cam">
+      <div class="lay sky">${img(sky)}</div>
+      <div class="lay palace">${img(palace)}<i class="mist m2"></i><i class="mist m1"></i></div>
+      <div class="lay garden">${img(garden)}<i class="mist m3"></i></div>
+      <div class="lay gatewrap"><i class="glow"></i><div class="leafg l">${img(leafSvg(false))}</div><div class="leafg r">${img(leafSvg(true))}</div></div>
+      <div class="lay front">${img(front)}</div>
+    </div>`;
+
 })();
 
 /* ===== Botanik chiziqlar ===== */
@@ -828,21 +873,20 @@ let opened = false;
 function openGate() {
   if (opened) return; opened = true;
   const gate = $("#gate"), k = reduce ? 0 : 1, at = (ms, fn) => setTimeout(fn, ms * k);
-  const sr = $("#seal").getBoundingClientRect(), pr = $(".portal").getBoundingClientRect();
+  const r = $(".gatewrap .glow").getBoundingClientRect();
   music.start();
-  gate.classList.add("s1"); dust.burst(22, sr.left + sr.width / 2, sr.top + sr.height / 2);
-  at(120, () => gate.classList.add("s2"));
-  at(300, () => { gate.classList.add("opening"); dust.stream(pr.left + pr.width / 2, pr.top + pr.height * .6, 700); });
-  at(1000, () => { gate.classList.add("through"); $("#flash").classList.add("go"); });
-  at(1350, () => {
+  gate.classList.add("s-open");
+  at(450, () => dust.stream(r.left + r.width / 2, r.top + r.height * .55, 800));
+  at(950, () => gate.classList.add("s-fly"));
+  at(1650, () => $("#flash").classList.add("go"));
+  at(1800, () => {
     gate.classList.add("gone"); document.body.classList.remove("locked");
     document.body.classList.add("entered"); document.body.classList.remove("pre");
     document.querySelectorAll(".hero .sprig").forEach(s => s.classList.add("in"));
   });
-  at(2000, () => gate.remove());
+  at(2500, () => gate.remove());
 }
-$("#seal").addEventListener("click", openGate);
-$(".portal").addEventListener("click", openGate);
+$("#scene").addEventListener("click", openGate);
 $("#openBtn").addEventListener("click", openGate);
 
 /* ===== Ko'rinish animatsiyasi ===== */
