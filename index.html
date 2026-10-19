@@ -550,7 +550,7 @@ body.locked .music{opacity:0;pointer-events:none}
   <section class="col" id="moments">
     <div class="eyebrow rv">Lahzalar</div>
     <h2 class="rv">Bazmdan suratlar</h2>
-    <p class="lead rv">Bazmda olgan suratlaringizni shu yerga yuklang. Bu lahzalar bir umr esdalik bo'lib qoladi.</p>
+    <p class="lead rv">Bazmda olgan suratlaringizni tarix sahifalarimizga muhrlash uchun shu yerga yuklashingizni so'raymiz. Bu lahzalar bir umr esdalik bo'lib qoladi.</p>
     <form class="glass stack rv" id="upForm" novalidate>
       <div class="banner" id="upBanner" hidden></div>
       <label class="drop" id="drop">
@@ -569,24 +569,6 @@ body.locked .music{opacity:0;pointer-events:none}
     </form>
   </section>
 
-  <section class="col" id="rsvp">
-    <div class="eyebrow rv">Javobingiz</div>
-    <h2 class="rv">Kelasizmi?</h2>
-    <p class="lead rv">Tayyorgarlik uchun kelishingizni oldindan bildirsangiz, xursand bo'lamiz.</p>
-    <form class="glass stack rv" id="rsForm" novalidate>
-      <div class="field"><label for="rsName">Ism va familiya</label><input id="rsName" maxlength="80" placeholder="To'liq ismingiz" autocomplete="name"></div>
-      <div class="field"><span class="legend">Bazmga kelasizmi?</span>
-        <div class="choice">
-          <input type="radio" name="rsGo" id="rsYes" value="yes"><label for="rsYes">Albatta kelaman</label>
-          <input type="radio" name="rsGo" id="rsNo" value="no"><label for="rsNo">Afsuski, kela olmayman</label>
-        </div>
-      </div>
-      <div class="field"><label for="rsCount">Necha kishi bo'lasiz</label><input id="rsCount" type="number" min="1" max="20" value="1" inputmode="numeric"></div>
-      <div class="field"><label for="rsWish">Tilaklaringiz</label><textarea id="rsWish" maxlength="600" placeholder="Samimiy tilaklaringiz"></textarea></div>
-      <button class="btn" id="rsBtn" type="submit"><span>Javobni yuborish</span></button>
-      <div class="msg" id="rsMsg" role="status"></div>
-    </form>
-  </section>
 </main>
 
 <footer>
@@ -1094,7 +1076,7 @@ function thanks({ eyebrow, title, text, sub }) {
 }
 
 /* ===== Javob (RSVP) ===== */
-$("#rsForm").addEventListener("submit", async e => {
+$("#rsForm") && $("#rsForm").addEventListener("submit", async e => {
   e.preventDefault();
   const msg = $("#rsMsg"), name = $("#rsName").value.trim(), go = document.querySelector('input[name="rsGo"]:checked');
   msg.className = "msg err";
@@ -1182,7 +1164,7 @@ async function openHost(pin) {
   }
   const { photos, answers } = data;
   photos.sort((a, b) => (b.ts || 0) - (a.ts || 0)); answers.sort((a, b) => (b.ts || 0) - (a.ts || 0));
-  body.innerHTML = `<div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-t="p">Lahzalar · <span id="cP">${photos.length}</span></button><button role="tab" aria-selected="false" data-t="r">Javoblar · <span id="cR">${answers.length}</span></button></div><div id="tabBody"></div>`;
+  body.innerHTML = `<div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-t="p">Lahzalar · <span id="cP">${photos.length}</span></button><button role="tab" aria-selected="false" data-t="r"${answers.length ? "" : " hidden"}>Javoblar · <span id="cR">${answers.length}</span></button></div><div id="tabBody"></div>`;
   const counts = () => { body.querySelector("#cP").textContent = photos.length; body.querySelector("#cR").textContent = answers.length; };
   const tb = body.querySelector("#tabBody");
   const fmt = ts => ts ? new Date(ts).toLocaleString("en-GB", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "";

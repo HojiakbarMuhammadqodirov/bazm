@@ -5,7 +5,6 @@
 - Gullar bilan bezatilgan darvoza intro: muhr sinadi, eshiklar ochiladi, barglar uchadi
 - Kalendar, taymer, xarita (Yandex, Google Maps)
 - **Lahzalar:** mehmonlar bazmdan suratlarni yuklaydi, suratlarni faqat to'y egalari PIN bilan ko'radi
-- **Kelasizmi?** anketasi, javoblar ham faqat to'y egalariga ko'rinadi
 
 Rasmlar va javoblar **Vercel Blob** da saqlanadi. Supabase ham, boshqa server ham kerak emas.
 
@@ -23,7 +22,7 @@ Tayyor bo'lgach, mehmonlarga `https://<loyiha>.vercel.app` havolasini yuborasiz.
 ## Tuzilishi
 - `index.html`: butun sayt (dizayn, animatsiya, formalar)
 - `api/upload.js`: suratni Vercel Blob'ga saqlaydi
-- `api/rsvp.js`: "Kelasizmi?" javobini saqlaydi
+- `api/rsvp.js`: (hozir ishlatilmaydi, anketa olib tashlangan)
 - `api/host.js`: PIN'ni tekshiradi va suratlar bilan javoblarni qaytaradi
 - `api/photo.js`: private suratlarni faqat PIN bilan beradi
 - `api/ping.js`: sahifa xotira ulanganini tekshirishi uchun
