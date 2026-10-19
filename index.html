@@ -359,6 +359,31 @@ body.locked .music{opacity:0;pointer-events:none}
 .btn.danger:hover{background:#fff5f6}
 .btn.danger.sure:hover{background:#963d42}
 
+/* couple in the intro */
+.couplewrap{pointer-events:none}
+.couple{position:absolute;left:32.5%;width:35%;top:67.2%;aspect-ratio:140/222;transform-origin:50% 100%;opacity:0;will-change:transform}
+.couple svg{width:100%;height:100%;display:block;overflow:visible}
+#gate.s-open .couple{animation:walkin 2.3s cubic-bezier(.3,.1,.35,1) .12s forwards}
+@keyframes walkin{0%{opacity:0;transform:translateY(8%) scale(1.06)}10%{opacity:1}100%{opacity:1;transform:translateY(-84%) scale(.3)}}
+#gate.s-open .cp-bride,#gate.s-open .cp-groom{animation:step .42s ease-in-out infinite alternate}
+#gate.s-open .cp-groom{animation-delay:-.21s}
+@keyframes step{from{transform:translateY(0)}to{transform:translateY(-2px)}}
+#gate.s-fly .lay.couplewrap{transform:scale(2.1);opacity:0;transition:transform 1.1s cubic-bezier(.55,0,.25,1),opacity .5s ease .35s}
+
+/* story carousel */
+.car{margin:36px calc(-1 * max(16px,env(safe-area-inset-left,0px))) 0}
+.car-track{display:flex;gap:6%;overflow-x:auto;scroll-snap-type:x mandatory;padding:26px 17% 34px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.car-track::-webkit-scrollbar{display:none}
+.pc{--tilt:0deg;flex:0 0 66%;max-width:360px;margin:0;scroll-snap-align:center;background:#fff;padding:10px 10px 0;box-shadow:0 22px 40px -18px rgba(74,34,52,.45),0 2px 6px rgba(74,34,52,.08);
+  transform:rotate(var(--tilt)) scale(.9);opacity:.75;transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .6s ease}
+.pc.on{transform:rotate(var(--tilt)) scale(1);opacity:1}
+.pc-img{aspect-ratio:3/4;overflow:hidden;background:#f6e3e8}
+.pc-img img{width:100%;height:100%;object-fit:cover;display:block;max-width:none}
+.pc figcaption{font-family:var(--f-script);font-size:clamp(19px,5.6vw,24px);white-space:nowrap;color:var(--mauve);text-align:center;padding:8px 6px 12px;line-height:1.2}
+.car-dots{display:flex;justify-content:center;gap:12px;margin-top:6px}
+.car-dots button{width:10px;height:10px;padding:0;border-radius:50%;border:1px solid var(--mauve);background:transparent;cursor:pointer;transition:background .3s,transform .3s}
+.car-dots button[aria-current="true"]{background:var(--mauve);transform:scale(1.25)}
+
 /* thank-you modal */
 .thanks{position:fixed;inset:0;z-index:66;display:flex;align-items:center;justify-content:center;
   padding-block:max(20px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-bottom,0px));padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));
@@ -434,6 +459,13 @@ body.locked .music{opacity:0;pointer-events:none}
       <p>Ushbu oqshomni siz bilan birga nishonlash biz uchun katta baxt.</p>
       <div class="sign">Hurmat va ehtirom bilan</div>
     </div>
+  </section>
+
+  <section class="col story">
+    <div class="eyebrow rv">Bizning suratlarimiz</div>
+    <h2 class="rv">Sevgi lahzalari</h2>
+    <div class="car rv"><div class="car-track" id="carTrack"></div></div>
+    <div class="car-dots" id="carDots"></div>
   </section>
 
   <section class="col">
@@ -525,7 +557,10 @@ const CONFIG = {
   // PIN: 2510 (sha256). O'zgartirish uchun: echo -n YANGIPIN | sha256sum
   pinHash: "ff150bc51704cbc2fb2f412c2d8a79afb6212c9dff3d6127c2b0f937a33ea5ed",
   // Mustaqil sayt sifatida joylashtirilganda (SETUP.md ga qarang)
-  supabase: { url: "", anonKey: "", bucket: "moments" }
+  supabase: { url: "", anonKey: "", bucket: "moments" },
+  // "Sevgi lahzalari" karuseli uchun rasmlar (bo'sh bo'lsa, chizilgan rasmlar ko'rsatiladi)
+  storyPhotos: [],
+  storyCaptions: []
 };
 
 document.documentElement.classList.add("js");
@@ -764,6 +799,40 @@ const dust = (() => {
         <path d="M50 336l16 25-16 25-16-25z" fill="none" stroke="${SHEEN}" stroke-width="1.2"/><circle cx="50" cy="361" r="5" fill="none" stroke="${SHEEN}" stroke-width="1.2"/>
         <rect x="0" y="${f(topY(0) - 4)}" width="5" height="${f(410 - topY(0) + 4)}" fill="${IRON}"/><rect x="95" y="${f(topY(95))}" width="5" height="${f(410 - topY(95))}" fill="${IRON}"/>
         <path d="M2 150V410" stroke="${SHEEN}" stroke-width=".8"/><circle cx="90" cy="268" r="3.2" fill="#b89268"/>`;
+  /* --- kelin va kuyov (orqadan, qo'l ushlashgan) — viewBox 0 0 120 220 --- */
+  const couple = (id = "c") => `
+    <defs>
+      <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#efe3df"/><stop offset=".45" stop-color="#fffaf8"/><stop offset="1" stop-color="#eadcd8"/></linearGradient>
+      <linearGradient id="${id}s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#26212b"/><stop offset=".5" stop-color="#3a3340"/><stop offset="1" stop-color="#231e27"/></linearGradient>
+    </defs>
+    <ellipse cx="54" cy="214" rx="56" ry="6" fill="#7a4a54" opacity=".16"/>
+    <g class="cp-groom">
+      <path d="M70 104L68 205H77L80 124L83 205H92L90 104Z" fill="#262229"/>
+      <ellipse cx="72" cy="206" rx="6" ry="2.6" fill="#1c181f"/><ellipse cx="88" cy="206" rx="6" ry="2.6" fill="#1c181f"/>
+      <path d="M66 37Q80 31 94 37L92 108Q86 112 80 109Q74 112 68 108Z" fill="url(#${id}s)"/>
+      <path d="M80 40V108" stroke="#1a161c" stroke-width=".8" opacity=".6"/>
+      <path d="M94 41L98 97" stroke="#2c2731" stroke-width="7" stroke-linecap="round"/>
+      <path d="M66 41L60 92" stroke="#2c2731" stroke-width="7" stroke-linecap="round"/>
+      <rect x="76" y="29" width="8" height="7" rx="2" fill="#e6c3b0"/>
+      <circle cx="80" cy="21" r="9.5" fill="#3a2a2b"/>
+      <path d="M72 30Q80 34 88 30" stroke="#f6f1ef" stroke-width="2" fill="none"/>
+    </g>
+    <g class="cp-bride">
+      <path d="M33 78Q42 83 51 78C58 118 70 168 80 210L-6 213C8 170 22 120 33 78Z" fill="url(#${id}g)"/>
+      <path d="M38 90C34 130 26 170 18 210M46 90C48 130 54 170 62 210M42 92C41 135 40 175 40 211" stroke="#e5d6d2" stroke-width=".9" fill="none"/>
+      <path d="M31 38Q42 33 53 38L51 80Q42 84 33 80Z" fill="#fbf4f1"/>
+      <path d="M33 60Q42 64 51 60" stroke="#eadad6" stroke-width=".8" fill="none"/>
+      <path d="M31 41L27 86" stroke="#f7efec" stroke-width="5.5" stroke-linecap="round"/>
+      <path d="M53 41L60 91" stroke="#f7efec" stroke-width="5.5" stroke-linecap="round"/>
+      <circle cx="60" cy="93" r="3.2" fill="#ecc9b8"/>
+      <rect x="38.5" y="30" width="7" height="7" rx="2" fill="#efcfbf"/>
+      <circle cx="42" cy="23" r="9" fill="#4a3236"/><circle cx="42" cy="15" r="5.5" fill="#53393d"/>
+      <path d="M42 13C30 30 22 70 16 120C11 160 2 192 -14 214L36 214C40 160 46 90 46 16Z" fill="#fff" opacity=".62"/>
+      <path d="M42 13C30 30 22 70 16 120C11 160 2 192 -14 214" stroke="#fff" stroke-width="1" fill="none" opacity=".9"/>
+      <path d="M38 14Q42 10 46 14" stroke="#f3d9c2" stroke-width="1.6" fill="none"/>
+    </g>`;
+  window.Art = { rose, leaf, cluster, cypress, pal, couple, PAL };
+
   const leafSvg = mirror => `<svg viewBox="0 0 100 420" preserveAspectRatio="none" aria-hidden="true"><g${mirror ? ' transform="translate(100 0) scale(-1 1)"' : ""}>${lf}</g></svg>`;
 
   // Har bir qatlam bir marta rasmga aylanadi: kamera harakatida minglab shakl qayta chizilmaydi
@@ -774,8 +843,91 @@ const dust = (() => {
       <div class="lay garden">${img(garden)}<i class="mist m3"></i></div>
       <div class="lay gatewrap"><i class="glow"></i><div class="leafg l">${img(leafSvg(false))}</div><div class="leafg r">${img(leafSvg(true))}</div></div>
       <div class="lay front">${img(front)}</div>
+      <div class="lay couplewrap"><div class="couple"><svg viewBox="-20 0 140 222" aria-hidden="true">${couple("ci")}</svg></div></div>
     </div>`;
 
+})();
+
+/* ===== "Sevgi lahzalari" karuseli ===== */
+(() => {
+  const A = window.Art; if (!A) return;
+  const W = 300, H = 400;
+  const wrap = (inner, defs) => `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>${defs}</defs>${inner}</svg>`;
+  const palaceAt = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s}) translate(-200 -548)">${A.pal}</g>`;
+  const domeDef = `<linearGradient id="dome" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e8bccb"/><stop offset=".45" stop-color="#f6dbe3"/><stop offset="1" stop-color="#d9a7b8"/></linearGradient>`;
+  const coupleAt = (x, y, s, id) => `<g transform="translate(${x} ${y}) scale(${s}) translate(-54 -214)">${A.couple(id)}</g>`;
+  const mist = (y, o) => `<ellipse cx="150" cy="${y}" rx="210" ry="20" fill="url(#mistG)" opacity="${o}"/>`;
+  const mistDef = `<radialGradient id="mistG"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>`;
+
+  const cards = [];
+  // 1 — bog' yo'lida, saroy tomon
+  {
+    let h = `<rect width="300" height="400" fill="url(#s1)"/><circle cx="150" cy="190" r="110" fill="url(#sun1)"/>`;
+    h += palaceAt(150, 228, .62) + mist(226, .9);
+    h += `<path d="M0 222Q150 210 300 222V400H0Z" fill="#e4e9da"/>`;
+    h += `<path d="M118 400C130 330 172 290 146 250S150 228 148 224L152 224C156 236 140 262 178 300S196 370 196 400Z" fill="#fbf0ea"/>`;
+    h += A.cluster(18, 300, 70, 14, 7, 13) + A.cluster(282, 300, 70, 14, 7, 13) + A.cluster(30, 380, 90, 16, 9, 16) + A.cluster(270, 380, 90, 16, 9, 16);
+    h += coupleAt(158, 352, .62, "k1");
+    h += A.cluster(10, 30, 90, 14, 7, 12) + A.cluster(290, 30, 90, 14, 7, 12);
+    cards.push({ t: "Bog' yo'lida", svg: wrap(h, domeDef + mistDef + `<linearGradient id="s1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6cdd7"/><stop offset=".6" stop-color="#fde9df"/></linearGradient><radialGradient id="sun1"><stop offset="0" stop-color="#fff6e8"/><stop offset="1" stop-color="#fff6e8" stop-opacity="0"/></radialGradient>`) });
+  }
+  // 2 — atirgulli ark ostida
+  {
+    let h = `<rect width="300" height="400" fill="url(#s2)"/>` + palaceAt(150, 262, .5) + mist(258, .85);
+    h += `<path d="M0 258H300V400H0Z" fill="#ece9de"/><path d="M110 400L140 262H160L190 400Z" fill="#fbf0ea"/>`;
+    h += `<path d="M0 0H300V400H246V160A96 96 0 0 0 54 160V400H0Z" fill="#eadfdb"/>`;
+    for (let i = 0; i < 260; i++) { const x = Math.random() * 300, y = Math.random() * 400; if (!(x > 54 && x < 246 && (y > 160 || Math.hypot(x - 150, y - 160) < 96))) h += Math.random() < .7 ? A.leaf(x, y, 5 + Math.random() * 7, Math.random() * 180) : A.rose(x, y, 5 + Math.random() * 7); }
+    for (let a = 175; a <= 365; a += 7) { const t = a * Math.PI / 180; h += A.rose(150 + Math.cos(t) * 98, 160 + Math.sin(t) * 98, 7 + Math.random() * 6); }
+    h += coupleAt(150, 372, .95, "k2");
+    cards.push({ t: "Ark ostida", svg: wrap(h, domeDef + mistDef + `<linearGradient id="s2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe3ea"/><stop offset="1" stop-color="#fff7f3"/></linearGradient>`) });
+  }
+  // 3 — guldasta va uzuklar
+  {
+    let h = `<rect width="300" height="400" fill="#f8ece8"/>`;
+    for (let i = 0; i < 40; i++) h += `<path d="M0 ${i * 10}H300" stroke="#f1e0dc" stroke-width=".6"/>`;
+    h += `<path d="M120 400L142 250H158L180 400Z" fill="#a9bfa3"/><path d="M128 262Q150 300 172 262" stroke="#e6a9b9" stroke-width="10" fill="none" stroke-linecap="round"/>`;
+    h += `<path d="M150 270Q118 330 96 360M150 270Q178 335 214 352" stroke="#e6a9b9" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+    h += A.cluster(150, 175, 150, 34, 12, 24);
+    h += `<g fill="none" stroke-width="7"><circle cx="128" cy="330" r="22" stroke="url(#gold)"/><circle cx="158" cy="338" r="22" stroke="url(#gold2)"/></g><circle cx="128" cy="308" r="5" fill="#fff" stroke="#e9d9c3" stroke-width="1.5"/>`;
+    cards.push({ t: "Baxt ramzi", svg: wrap(h, `<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9a06a"/><stop offset=".5" stop-color="#f3dfb5"/><stop offset="1" stop-color="#b48a55"/></linearGradient><linearGradient id="gold2" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9a06a"/><stop offset=".5" stop-color="#f6e6c4"/><stop offset="1" stop-color="#a87c4a"/></linearGradient>`) });
+  }
+  // 4 — yulduzli oqshom
+  {
+    let h = `<rect width="300" height="400" fill="url(#s4)"/>`;
+    for (let i = 0; i < 70; i++) h += `<circle cx="${(Math.random() * 300).toFixed(1)}" cy="${(Math.random() * 200).toFixed(1)}" r="${(.4 + Math.random() * 1.2).toFixed(2)}" fill="#fff" opacity="${(.4 + Math.random() * .6).toFixed(2)}"/>`;
+    h += `<path d="M236 58a22 22 0 1 0 14 38a18 18 0 1 1 -14 -38z" fill="#fff4e6"/>`;
+    h += `<g opacity=".9">${palaceAt(150, 250, .58)}</g>`;
+    for (const [x, y] of [[118, 225], [127, 225], [173, 225], [182, 225], [150, 238]]) h += `<circle cx="${x}" cy="${y}" r="3" fill="#ffe2a8" opacity=".9"/>`;
+    h += mist(250, .35) + `<path d="M0 252Q150 236 300 256V400H0Z" fill="#6f4a62"/><path d="M0 300Q150 280 300 304V400H0Z" fill="#5c3d53"/>`;
+    h += `<path d="M0 120Q75 150 150 128T300 126" stroke="#f3d7c8" stroke-width=".8" fill="none"/>`;
+    for (let x = 8; x < 300; x += 16) { const y = 120 + 22 * Math.sin(x / 48) * .45 + (x < 150 ? (x / 150) * 8 : ((300 - x) / 150) * 4); h += `<circle cx="${x}" cy="${y.toFixed(1)}" r="2.4" fill="#ffe7b0"/><circle cx="${x}" cy="${y.toFixed(1)}" r="6" fill="#ffe7b0" opacity=".25"/>`; }
+    h += `<g opacity=".95">${coupleAt(150, 330, .78, "k4")}</g>`;
+    cards.push({ t: "Yulduzli oqshom", svg: wrap(h, domeDef + mistDef + `<linearGradient id="s4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f2b45"/><stop offset=".6" stop-color="#8a5a78"/><stop offset="1" stop-color="#d79aae"/></linearGradient>`) });
+  }
+
+  const photos = (CONFIG.storyPhotos || []).filter(Boolean);
+  const items = photos.length ? photos.map((u, i) => ({ t: (CONFIG.storyCaptions || [])[i] || "", img: u })) : cards;
+  const track = $("#carTrack"), dots = $("#carDots");
+  const enc = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s.replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" '));
+  track.innerHTML = items.map((it, i) => `<figure class="pc" data-i="${i}"><div class="pc-img"><img alt="${esc(it.t || "Kelin va kuyov")}" loading="lazy" src="${it.img ? esc(it.img) : enc(it.svg)}"></div>${it.t ? `<figcaption>${esc(it.t)}</figcaption>` : ""}</figure>`).join("");
+  dots.innerHTML = items.map((_, i) => `<button type="button" aria-label="${i + 1}-surat"></button>`).join("");
+  const cardsEl = [...track.children], dotEls = [...dots.children];
+  let cur = -1;
+  const setActive = i => {
+    if (i === cur) return; cur = i;
+    cardsEl.forEach((c, k) => { c.classList.toggle("on", k === i); c.style.setProperty("--tilt", k === i ? "-1.5deg" : (k < i ? "-5deg" : "5deg")); });
+    dotEls.forEach((d, k) => d.setAttribute("aria-current", k === i));
+  };
+  const nearest = () => { const mid = track.scrollLeft + track.clientWidth / 2; let best = 0, bd = 1e9; cardsEl.forEach((c, k) => { const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid); if (d < bd) { bd = d; best = k; } }); return best; };
+  const go = i => { const c = cardsEl[(i + cardsEl.length) % cardsEl.length]; track.scrollTo({ left: c.offsetLeft - (track.clientWidth - c.offsetWidth) / 2, behavior: reduce ? "auto" : "smooth" }); };
+  let raf; track.addEventListener("scroll", () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => setActive(nearest())); }, { passive: true });
+  dotEls.forEach((d, k) => d.onclick = () => { go(k); hold(); });
+  let timer, paused = false;
+  const hold = () => { paused = true; clearTimeout(timer); timer = setTimeout(() => paused = false, 8000); };
+  ["pointerdown", "touchstart", "wheel"].forEach(ev => track.addEventListener(ev, hold, { passive: true }));
+  setInterval(() => { if (!paused && !document.hidden && document.body.classList.contains("entered")) { const r = track.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) go(cur + 1); } }, 4500);
+  setActive(0);
+  addEventListener("load", () => go(0));
 })();
 
 /* ===== Botanik chiziqlar ===== */
@@ -876,15 +1028,15 @@ function openGate() {
   const r = $(".gatewrap .glow").getBoundingClientRect();
   music.start();
   gate.classList.add("s-open");
-  at(450, () => dust.stream(r.left + r.width / 2, r.top + r.height * .55, 800));
-  at(950, () => gate.classList.add("s-fly"));
-  at(1650, () => $("#flash").classList.add("go"));
-  at(1800, () => {
+  at(700, () => dust.stream(r.left + r.width / 2, r.top + r.height * .55, 900));
+  at(1700, () => gate.classList.add("s-fly"));
+  at(2350, () => $("#flash").classList.add("go"));
+  at(2500, () => {
     gate.classList.add("gone"); document.body.classList.remove("locked");
     document.body.classList.add("entered"); document.body.classList.remove("pre");
     document.querySelectorAll(".hero .sprig").forEach(s => s.classList.add("in"));
   });
-  at(2500, () => gate.remove());
+  at(3200, () => gate.remove());
 }
 $("#scene").addEventListener("click", openGate);
 $("#openBtn").addEventListener("click", openGate);
